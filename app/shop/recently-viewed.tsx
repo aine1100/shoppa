@@ -1,11 +1,11 @@
-import Calendar from '@/components/ui/Calendar';
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { Image, SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import BottomNavigation from '../../components/ui/BottomNavigation';
+import Calendar from '../../components/ui/Calendar';
 
-export default function FavoritesScreen() {
+const RecentlyViewedScreen = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
 
   const products = [
@@ -37,7 +37,7 @@ export default function FavoritesScreen() {
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
-    // You can add logic here to filter products based on selected date
+    // Filter products based on selected date
     console.log('Selected date:', date);
   };
 
@@ -46,36 +46,47 @@ export default function FavoritesScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>Recently viewed</Text>
-        
-        <Calendar 
-          selectedDate={selectedDate}
-          onDateSelect={handleDateSelect}
-          style={styles.calendar}
-        />
-        
-        <View style={styles.productsGrid}>
-          {products.map((product) => (
-            <TouchableOpacity key={product.id} style={styles.productCard} onPress={() => handleProductPress(product.id)}>
-              <Image source={product.image} style={styles.productImage} />
-              <Text style={styles.productTitle}>{product.title}</Text>
-              <View style={styles.priceRow}>
-                <Text style={styles.price}>{product.price}</Text>
-                <TouchableOpacity style={styles.whatsappButton}>
-                  <Ionicons name="logo-whatsapp" size={20} color="white" />
-                </TouchableOpacity>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.wrapper}>
+      <SafeAreaView style={styles.container}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Recently viewed</Text>
+          
+          <Calendar 
+            selectedDate={selectedDate}
+            onDateSelect={handleDateSelect}
+            style={styles.calendar}
+          />
+          
+          <View style={styles.productsGrid}>
+            {products.map((product) => (
+              <TouchableOpacity 
+                key={product.id} 
+                style={styles.productCard}
+                onPress={() => handleProductPress(product.id)}
+              >
+                <Image source={product.image} style={styles.productImage} />
+                <Text style={styles.productTitle}>{product.title}</Text>
+                <View style={styles.priceRow}>
+                  <Text style={styles.price}>{product.price}</Text>
+                  <TouchableOpacity style={styles.whatsappButton}>
+                    <Ionicons name="logo-whatsapp" size={20} color="white" />
+                  </TouchableOpacity>
+                </View>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+      <BottomNavigation />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
   container: {
     flex: 1,
     backgroundColor: '#fff',
@@ -130,3 +141,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default RecentlyViewedScreen;

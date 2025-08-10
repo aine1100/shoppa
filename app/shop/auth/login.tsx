@@ -14,7 +14,7 @@ export default function LoginScreen() {
 
   const handleLogin = () => {
     // Navigate to main app
-    router.push('/(tabs)');
+    router.push('/(main)/home');
   };
 
   const handleForgotPassword = () => {

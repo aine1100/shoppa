@@ -1,31 +1,40 @@
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/Button';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Modal, ScrollView, TouchableOpacity, View,StyleSheet } from 'react-native';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Button } from "@/components/ui/Button";
+import { router } from "expo-router";
+import React, { useState } from "react";
+import {
+  Modal,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 export default function SettingsScreen() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const handleSettingPress = (setting: string) => {
     switch (setting) {
-      case 'country':
-        router.push('/settings/country');
+      case "profile":
+        router.push("/shop/profile/profile");
         break;
-      case 'language':
-        router.push('/settings/language');
+      case "country":
+        router.push("/settings/country");
         break;
-      case 'location':
+      case "language":
+        router.push("/settings/language");
+        break;
+      case "location":
         // Handle location setting
         break;
-      case 'appearance':
-        router.push('/settings/appearance');
+      case "appearance":
+        router.push("/settings/appearance");
         break;
-      case 'privacy':
+      case "privacy":
         // Handle privacy setting
         break;
-      case 'storage':
+      case "storage":
         // Handle storage setting
         break;
     }
@@ -33,7 +42,7 @@ export default function SettingsScreen() {
 
   const handleLogout = () => {
     // Handle logout
-    router.replace('/');
+    router.replace("/");
   };
 
   const handleSwitchAccounts = () => {
@@ -47,7 +56,10 @@ export default function SettingsScreen() {
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Title */}
         <View style={styles.titleContainer}>
           <ThemedText type="title" style={styles.title}>
@@ -65,56 +77,66 @@ export default function SettingsScreen() {
               <ThemedText style={styles.verifiedIcon}>✓</ThemedText>
             </View>
           </View>
-          
+
           <ThemedText style={styles.profileName}>Livia Kirezi</ThemedText>
           <ThemedText style={styles.profileHandle}>@liviakirezi</ThemedText>
         </View>
 
         {/* Settings Options */}
         <View style={styles.settingsContainer}>
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('country')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("profile")}
+          >
+            <ThemedText style={styles.settingText}>Shop Profile</ThemedText>
+            <ThemedText style={styles.settingArrow}>›</ThemedText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("country")}
           >
             <ThemedText style={styles.settingText}>Country</ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('language')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("language")}
           >
             <ThemedText style={styles.settingText}>Language</ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('location')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("location")}
           >
             <ThemedText style={styles.settingText}>Location</ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('appearance')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("appearance")}
           >
             <ThemedText style={styles.settingText}>Appearance</ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('privacy')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("privacy")}
           >
-            <ThemedText style={styles.settingText}>Privacy & Security</ThemedText>
+            <ThemedText style={styles.settingText}>
+              Privacy & Security
+            </ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.settingItem} 
-            onPress={() => handleSettingPress('storage')}
+          <TouchableOpacity
+            style={styles.settingItem}
+            onPress={() => handleSettingPress("storage")}
           >
             <ThemedText style={styles.settingText}>Storage</ThemedText>
             <ThemedText style={styles.settingArrow}>›</ThemedText>
@@ -126,9 +148,11 @@ export default function SettingsScreen() {
           <TouchableOpacity onPress={handleLogout}>
             <ThemedText style={styles.logoutText}>Log out</ThemedText>
           </TouchableOpacity>
-          
+
           <TouchableOpacity onPress={handleSwitchAccounts}>
-            <ThemedText style={styles.switchAccountsText}>Switch accounts</ThemedText>
+            <ThemedText style={styles.switchAccountsText}>
+              Switch accounts
+            </ThemedText>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -145,15 +169,15 @@ export default function SettingsScreen() {
             <View style={styles.warningIcon}>
               <ThemedText style={styles.warningText}>!</ThemedText>
             </View>
-            
+
             <ThemedText style={styles.modalTitle}>
               You are going to delete your account
             </ThemedText>
-            
+
             <ThemedText style={styles.modalSubtitle}>
               You won&apos;t be able to restore your data
             </ThemedText>
-            
+
             <View style={styles.modalButtons}>
               <Button
                 title="Cancel"
@@ -162,7 +186,7 @@ export default function SettingsScreen() {
                 style={styles.cancelButton}
                 textStyle={styles.cancelButtonText}
               />
-              
+
               <Button
                 title="Delete"
                 onPress={handleDeleteAccount}
@@ -188,163 +212,163 @@ const styles = StyleSheet.create({
     paddingBottom: 100,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontWeight: "bold",
+    color: "#333333",
   },
   profileSection: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 40,
   },
   profileImageContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 16,
   },
   profileImage: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: '#00BCD4',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#00BCD4",
+    alignItems: "center",
+    justifyContent: "center",
   },
   profileImageText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
+    fontWeight: "bold",
+    color: "#FFFFFF",
   },
   verifiedBadge: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
     width: 24,
     height: 24,
     borderRadius: 12,
-    backgroundColor: '#7CB342',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#7CB342",
+    alignItems: "center",
+    justifyContent: "center",
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: "#FFFFFF",
   },
   verifiedIcon: {
     fontSize: 12,
-    color: '#FFFFFF',
-    fontWeight: 'bold',
+    color: "#FFFFFF",
+    fontWeight: "bold",
   },
   profileName: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: '#333333',
+    fontWeight: "bold",
+    color: "#333333",
     marginBottom: 4,
   },
   profileHandle: {
     fontSize: 14,
-    color: '#666666',
+    color: "#666666",
   },
   settingsContainer: {
     marginBottom: 40,
   },
   settingItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     paddingVertical: 20,
     borderBottomWidth: 1,
-    borderBottomColor: '#F0F0F0',
+    borderBottomColor: "#F0F0F0",
   },
   settingText: {
     fontSize: 16,
-    color: '#333333',
+    color: "#333333",
   },
   settingArrow: {
     fontSize: 20,
-    color: '#999999',
+    color: "#999999",
   },
   actionsContainer: {
     gap: 16,
   },
   logoutText: {
     fontSize: 16,
-    color: '#FF5252',
-    fontWeight: '500',
+    color: "#FF5252",
+    fontWeight: "500",
   },
   switchAccountsText: {
     fontSize: 16,
-    color: '#00BCD4',
-    fontWeight: '500',
+    color: "#00BCD4",
+    fontWeight: "500",
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     paddingHorizontal: 32,
   },
   modalContainer: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 20,
     padding: 32,
-    alignItems: 'center',
-    width: '100%',
+    alignItems: "center",
+    width: "100%",
     maxWidth: 350,
   },
   warningIcon: {
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderWidth: 3,
-    borderColor: '#7CB342',
-    alignItems: 'center',
-    justifyContent: 'center',
+    borderColor: "#7CB342",
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 24,
   },
   warningText: {
     fontSize: 24,
-    color: '#7CB342',
-    fontWeight: 'bold',
+    color: "#7CB342",
+    fontWeight: "bold",
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333333',
-    textAlign: 'center',
+    fontWeight: "bold",
+    color: "#333333",
+    textAlign: "center",
     marginBottom: 8,
   },
   modalSubtitle: {
     fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
+    color: "#666666",
+    textAlign: "center",
     marginBottom: 32,
   },
   modalButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
-    width: '100%',
+    width: "100%",
   },
   cancelButton: {
     flex: 1,
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
   },
   cancelButtonText: {
-    color: '#666666',
+    color: "#666666",
   },
   deleteButton: {
     flex: 1,
   },
   bottomIndicator: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 5,
-    alignSelf: 'center',
+    alignSelf: "center",
     width: 134,
     height: 5,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     borderRadius: 2.5,
   },
 });

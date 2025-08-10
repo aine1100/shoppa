@@ -86,14 +86,6 @@ export default function MainTabLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <TabBarIcon name="profile" focused={focused} />
-          ),
-        }}
-      />
-      <Tabs.Screen
         name="settings"
         options={{
           tabBarIcon: ({ focused }) => (

@@ -16,12 +16,14 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider value={DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="shop" options={{ headerShown: false }} />
-        <Stack.Screen name="(main)" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="index" />
+        <Stack.Screen name="shop" />
+        <Stack.Screen name="(main)" />
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="calendar-demo" />
+        <Stack.Screen name="settings" />
+        <Stack.Screen name="+not-found" options={{ headerShown: true }} />
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
