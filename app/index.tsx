@@ -1,3 +1,3 @@
-import { OnBoardingScreen } from './shop/onBoarding/onBoarding';
+import SplashScreen from "./(user)/SplashScreen";
+export default SplashScreen;
 
-export default OnBoardingScreen;
