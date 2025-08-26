@@ -22,9 +22,7 @@ export default function SettingsScreen() {
       case "country":
         router.push("/settings/country");
         break;
-      case "language":
-        router.push("/settings/language");
-        break;
+    
       case "location":
         // Handle location setting
         break;
@@ -100,13 +98,7 @@ export default function SettingsScreen() {
             <ThemedText style={styles.settingArrow}>›</ThemedText>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.settingItem}
-            onPress={() => handleSettingPress("language")}
-          >
-            <ThemedText style={styles.settingText}>Language</ThemedText>
-            <ThemedText style={styles.settingArrow}>›</ThemedText>
-          </TouchableOpacity>
+         
 
           <TouchableOpacity
             style={styles.settingItem}

@@ -2,7 +2,7 @@ import { Colors } from '@/constants/Colors';
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 
-const TabButtons = () => {
+const TabButtons = ({}) => {
   const [selectedTab, setSelectedTab] = useState('All'); 
 
   const tabs = ['All', 'Clothes'];
