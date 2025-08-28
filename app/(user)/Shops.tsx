@@ -15,14 +15,11 @@ const ShopsScreen = () => {
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
 
       <SearchBar />
-
-      {/* Shops Section */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>Shops</Text>
         <Text style={styles.seeAll}>See all</Text>
       </View>
 
-      {/* Shops Grid */}
       <View style={styles.shopGrid}>
         {shops.map((shop) => (
           <ShopCard key={shop.id} {...shop} />

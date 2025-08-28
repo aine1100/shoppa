@@ -21,7 +21,6 @@ import Entypo from '@expo/vector-icons/Entypo';
 export default function HomeScreen() {
   return (
     <View style={styles.container}>
-      {/* Top bar */}
       <View style={styles.topBar}>
         {/* <TouchableOpacity style={styles.iconCircle}>
           <Ionicons name="menu-outline" size={22} color="#111" />
@@ -54,12 +53,9 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Products */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Products</Text>
         </View>
-
-        {/* small spacing between title and tabs */}
         <View style={{ height: 6 }} />
 
         <TabButtons />
@@ -71,12 +67,10 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Product card */}
         <View style={styles.cardPad}>
           <ProductCard />
         </View>
 
-        {/* Shops */}
         <View style={styles.sectionRow}>
           <Text style={styles.subSectionTitle}>Shops</Text>
           <TouchableOpacity>
@@ -98,7 +92,6 @@ export default function HomeScreen() {
         </ScrollView>
       </ScrollView>
 
-      {/* Bottom nav */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.homePill}>
           <Ionicons name="home" size={18} color="#fff" />

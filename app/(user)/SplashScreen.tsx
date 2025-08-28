@@ -62,8 +62,6 @@ export default function SplashScreen() {
       </View>
 
       
-
-      {/* Bottom Card */}
       <View style={styles.bottomCard}>
         <Text style={styles.title}>Connect With Different Shops</Text>
         <Text style={styles.subtitle}>
