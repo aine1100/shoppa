@@ -1,82 +1,25 @@
 
 import { router } from "expo-router";
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
-
-const { width } = Dimensions.get("window");
+import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SplashScreen() {
   return (
     <View style={styles.container}>
-      <View style={styles.imageGrid}>
-        <Image source={require("../../assets/images/image_1.png")} 
-        style={{
-          position: "absolute",
-          left: -40,
-          width: 100,
-          height: 250,
-          borderRadius: 20,
-          marginTop: 30
-        }} 
-        />
-        <Image source={require("../../assets/images/image_2.png")} 
-        style={{
-          position: "absolute", 
-          right: -38,
-          width: 100,
-          height: 250,
-          borderRadius: 20,
-          marginTop: 30
-        }}
-         />
-        <Image source={require("../../assets/images/image_3.png")}
-        style={{
-          position: "absolute",
-          left: 90,
-          width: 170,
-          height: 250,
-          borderRadius: 20,
-          top: 50,
-          marginTop: 20
-        }} />
-        <Image source={require("../../assets/images/image_4.png")} style={{
-          position: "absolute",
-          left: -17,
-          width: 170,
-          height: 250,
-          top: 320,
-          borderRadius: 20,
-          marginTop: 18
-
-        }} />
-        <Image source={require("../../assets/images/image_5.png")} style={{
-          position: "absolute",
-          left: 165,
-          width: 170,
-          height: 250,
-          top: 320,
-          borderRadius: 20,
-          marginTop: 18
-        }} />
-        <View style={styles.overlay} />
-      </View>
-
-      
-
-      {/* Bottom Card */}
-      <View style={styles.bottomCard}>
-        <Text style={styles.title}>Connect With Different Shops</Text>
-        <Text style={styles.subtitle}>
-          Get to know and buy with inhand with different shops near your home with us
-        </Text>
-        <TouchableOpacity style={styles.button} onPress={() => { router.push("/(user)/Home") }}>
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
-        <View style={{marginBottom: 5}} />
-        <TouchableOpacity style={styles.button} onPress={() => { router.push("/shop/onBoarding/OnBoardingScreen") }}>
-          <Text style={styles.buttonText}>Your part</Text>
-        </TouchableOpacity>
-      </View>
+      <ImageBackground
+        source={require("../../assets/images/splash.png")}
+        style={styles.background}
+        resizeMode="cover"
+      >
+        <View style={styles.darkOverlay} />
+        <View style={styles.content}>
+          <Text style={styles.title}>You want{"\n"}Authentic, here{"\n"}you go!</Text>
+          <Text style={styles.subtitle}>Find it here, buy it now!</Text>
+          <TouchableOpacity style={styles.button} onPress={() => { router.push("/auth/welcome") }}>
+            <Text style={styles.buttonText}>Get Started</Text>
+          </TouchableOpacity>
+        </View>
+      </ImageBackground>
     </View>
   );
 }
@@ -84,63 +27,44 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
   },
-  imageGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginTop: 40,
-    marginHorizontal: 10,
-    
+  background: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
-  image: {
-    width: width * 0.42,
-    height: width * 0.55,
-    borderRadius: 12,
-    margin: 6,
+  darkOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.35)",
   },
-  overlay: {
-    ...StyleSheet.absoluteFillObject, 
-    backgroundColor: "rgba(0, 0, 0, 1)",
-  },
-  bottomCard: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
-    backgroundColor: "#fff",
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    paddingVertical: 25,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 8,
-    height: 250,
+  content: {
+    paddingHorizontal: 24,
+    paddingBottom: 40,
   },
   title: {
-    fontSize: 18,
-    fontWeight: "600",
+    color: "#ffffff",
+    fontSize: 28,
+    fontWeight: "700",
     textAlign: "center",
     marginBottom: 8,
-    color:"#7CB342" ,
   },
   subtitle: {
+    color: "#E5E7EB",
     fontSize: 14,
     textAlign: "center",
-    color: "#555",
     marginBottom: 20,
   },
   button: {
-    backgroundColor: "#28a745",
+    alignSelf: "center",
+    backgroundColor: "#68AE3C",
     borderRadius: 8,
     paddingVertical: 12,
+    paddingHorizontal: 24,
+    minWidth: 220,
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
   },

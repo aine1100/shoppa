@@ -30,13 +30,13 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 4,
     borderWidth: 2,
-    borderColor: '#7CB342',
+    borderColor: '#68AE3C',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   checkboxChecked: {
-    backgroundColor: '#7CB342',
+    backgroundColor: '#68AE3C',
   },
   checkmark: {
     color: '#FFFFFF',
@@ -45,6 +45,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    color: '#7CB342',
+    color: '#68AE3C',
   },
 });

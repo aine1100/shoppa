@@ -59,12 +59,14 @@ export default function SignUpScreen() {
               value={firstName}
               onChangeText={setFirstName}
               style={styles.halfInput}
+              leftIconName="person"
             />
             <Input
               placeholder="Last Name"
               value={lastName}
               onChangeText={setLastName}
               style={styles.halfInput}
+              leftIconName="person"
             />
           </View>
 
@@ -73,6 +75,7 @@ export default function SignUpScreen() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            leftIconName="mail"
           />
 
           <Input
@@ -81,6 +84,7 @@ export default function SignUpScreen() {
             onChangeText={setPassword}
             secureTextEntry
             showPasswordToggle
+            leftIconName="lock-closed"
           />
 
           <Input
@@ -89,6 +93,7 @@ export default function SignUpScreen() {
             onChangeText={setConfirmPassword}
             secureTextEntry
             showPasswordToggle
+            leftIconName="lock-closed"
           />
 
           <Button
@@ -149,7 +154,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#7CB342",
+    color: "#68AE3C",
     marginBottom: 8,
   },
   subtitle: {
@@ -171,7 +176,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#E0E0E0",
   },
   progressDotActive: {
-    backgroundColor: "#7CB342",
+    backgroundColor: "#68AE3C",
   },
   formContainer: {
     paddingHorizontal: 32,
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
     minHeight: "auto",
   },
   loginButtonText: {
-    color: "#7CB342",
+    color: "#68AE3C",
     fontWeight: "600",
   },
   dividerContainer: {
