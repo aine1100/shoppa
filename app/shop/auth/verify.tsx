@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/Input';
 import { RoleSelector } from '@/components/ui/RoleSelector';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function VerifyScreen() {
   const [nationalId, setNationalId] = useState('');
@@ -13,8 +13,15 @@ export default function VerifyScreen() {
   const [selectedRole, setSelectedRole] = useState<'buyer' | 'seller' | null>(null);
 
   const handleNext = () => {
-    // Navigate to shop room selection
-    router.push('/shop/profile/store');
+    if (!selectedRole) {
+      Alert.alert('Select Role', 'Please choose Buyer or Seller to continue.');
+      return;
+    }
+    if (selectedRole === 'seller') {
+      router.push('/shop/profile/store');
+    } else {
+      router.replace('/(user)/Home');
+    }
   };
 
   const handleUploadId = () => {
@@ -103,7 +110,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0E0E0',
   },
   progressDotActive: {
-    backgroundColor: '#7CB342',
+    backgroundColor: '#68AE3C',
   },
   formContainer: {
     paddingHorizontal: 32,

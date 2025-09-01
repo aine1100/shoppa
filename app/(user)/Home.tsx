@@ -1,24 +1,28 @@
-// app/screens/HomeScreen.tsx (or .js)
-import React from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
-import SearchBar from "@/components/ui/SearchBar";
 import ProductCard from "@/components/ui/ProductCard";
-import ShopCard from "@/components/ui/ShopCard";
-import TabButtons from "@/components/ui/TabButtons";
 import { Colors } from "@/constants/Colors";
+import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import Entypo from '@expo/vector-icons/Entypo';
+import React, { useState } from "react";
+import {
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
+
+// Dynamic import for Lucide
+let Lucide: any = null;
+try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
+const { Camera, Search } = Lucide || {};
 
 export default function HomeScreen() {
+  const [activeCategory, setActiveCategory] = useState("All");
+  const [showImageSearch, setShowImageSearch] = useState(false);
+
+  const categories = ["All", "Clothes", "Food", "Furniture", "Fruits"];
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -29,27 +33,22 @@ export default function HomeScreen() {
       </View>
 
       <ScrollView
-        contentContainerStyle={styles.scrollPad}
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Search */}
-        <View style={styles.searchWrap}>
-          <SearchBar />
-        </View>
-
         {/* Banner */}
         <View style={styles.banner}>
-          <View style={styles.bannerLeft}>
+          <View style={styles.bannerContent}>
             <Text style={styles.bannerTitle}>
-              Get all the products{"\n"}from different shops
+              Get all the products from different shops
             </Text>
-            <TouchableOpacity style={styles.exploreBtn}>
-              <Text style={styles.exploreTxt}>Explore</Text>
+            <TouchableOpacity style={styles.exploreButton}>
+              <Text style={styles.exploreButtonText}>Explore</Text>
             </TouchableOpacity>
           </View>
           <Image
             source={require("../../assets/images/shoe.png")}
-            style={styles.bannerImg}
+            style={styles.bannerImage}
           />
         </View>
 
@@ -58,12 +57,11 @@ export default function HomeScreen() {
         </View>
         <View style={{ height: 6 }} />
 
-        <TabButtons />
-
-        <View style={styles.sectionRow}>
-          <Text style={styles.subSectionTitle}>Latest</Text>
+        {/* Latest Section */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.subsectionTitle}>Latest</Text>
           <TouchableOpacity>
-            <Text style={styles.link}>See all</Text>
+            <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
 
@@ -74,21 +72,42 @@ export default function HomeScreen() {
         <View style={styles.sectionRow}>
           <Text style={styles.subSectionTitle}>Shops</Text>
           <TouchableOpacity>
-            <Text style={styles.link}>See all</Text>
+            <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.shopsRow}
+          contentContainerStyle={styles.shopsContainer}
         >
-          <View style={{ marginRight: 14 }}>
-            <ShopCard />
-          </View>
-          <View style={{ marginRight: 14 }}>
-            <ShopCard />
-          </View>
+          <TouchableOpacity 
+            style={styles.shopCard}
+            onPress={() => router.push("/(user)/ShopDetail")}
+          >
+            <Image
+              source={require("../../assets/images/image_5.png")}
+              style={styles.shopImage}
+            />
+            <Text style={styles.shopName}>Simba Supermarket</Text>
+            <TouchableOpacity style={styles.viewShopButton}>
+              <Text style={styles.viewShopButtonText}>View shop</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.shopCard}
+            onPress={() => router.push("/(user)/ShopDetail")}
+          >
+            <Image
+              source={require("../../assets/images/image_5.png")}
+              style={styles.shopImage}
+            />
+            <Text style={styles.shopName}>Simba Supermarket</Text>
+            <TouchableOpacity style={styles.viewShopButton}>
+              <Text style={styles.viewShopButtonText}>View shop</Text>
+            </TouchableOpacity>
+          </TouchableOpacity>
         </ScrollView>
       </ScrollView>
 
@@ -114,50 +133,73 @@ export default function HomeScreen() {
   );
 }
 
-const R = 16;
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#fff" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#fff" 
+  },
 
-  topBar: {
+  // Header styles
+  header: {
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-between",
-    paddingTop: 14,
+    paddingTop: 50,
     paddingHorizontal: 16,
-    paddingBottom: 8,
-  },
-  iconCircle: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: "#e8e8e8",
-    alignItems: "center",
-    justifyContent: "center",
+    paddingBottom: 16,
     backgroundColor: "#fff",
   },
-  brand: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: Colors.tint,
+  menuButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  searchContainer: {
+    flex: 1,
+    marginHorizontal: 12,
+  },
+  searchBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  searchInput: {
+    flex: 1,
+    marginHorizontal: 8,
+    fontSize: 16,
+    color: "#000",
+  },
+  cameraButton: {
+    width: 40,
+    height: 40,
+    alignItems: "center",
+    justifyContent: "center",
   },
 
-  scrollPad: { paddingBottom: 100 },
+  // Content styles
+  scrollContent: { 
+    paddingBottom: 100 
+  },
 
-  searchWrap: { paddingHorizontal: 16, marginTop: 8 },
-
+  // Banner styles
   banner: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.tint,
     marginHorizontal: 16,
     marginTop: 16,
-    borderRadius: R,
+    borderRadius: 16,
     height: 150,
     paddingHorizontal: 16,
+    overflow: "hidden",
   },
-  bannerLeft: { flex: 1, paddingRight: 8 },
+  bannerContent: { 
+    flex: 1, 
+    paddingRight: 8 
+  },
   bannerTitle: {
     color: "#fff",
     fontSize: 16,
@@ -165,27 +207,31 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 12,
   },
-  exploreBtn: {
+  exploreButton: {
     backgroundColor: "#fff",
     borderRadius: 22,
     paddingVertical: 8,
     paddingHorizontal: 16,
     alignSelf: "flex-start",
   },
-  exploreTxt: { color: Colors.tint, fontWeight: "700" },
-  bannerImg: { 
-    width: 200, 
-    height: 195, 
+  exploreButtonText: { 
+    color: Colors.tint, 
+    fontWeight: "700" 
+  },
+  bannerImage: { 
+    width: 120, 
+    height: 120, 
     position: "absolute",
-    right: -20,
-    top: 20
+    right: -10,
+    top: 15
   },
 
-  sectionRow: {
+  // Section styles
+  sectionHeader: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    marginTop: 18,
+    marginTop: 24,
     paddingHorizontal: 16,
   },
   sectionTitle: {
@@ -193,57 +239,229 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#2c2c2c",
   },
+  subsectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#2c2c2c",
+  },
+  seeAllText: { 
+    color: Colors.tint, 
+    fontSize: 13, 
+    fontWeight: "600" 
+  },
+
+  // Category styles
+  categoryContainer: {
+    paddingHorizontal: 16,
+    marginTop: 12,
+  },
+  categoryButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    marginRight: 12,
+    borderRadius: 20,
+    backgroundColor: "#f5f5f5",
+  },
+  activeCategoryButton: {
+    backgroundColor: Colors.tint,
+  },
+  categoryText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  activeCategoryText: {
+    color: "#fff",
+  },
+
+  // Product card styles
+  productCard: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    marginHorizontal: 16,
+    marginTop: 12,
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  productImage: {
+    width: 80,
+    height: 80,
+    borderRadius: 8,
+  },
+  productInfo: {
+    flex: 1,
+    marginLeft: 12,
+    justifyContent: "space-between",
+  },
+  productName: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#2c2c2c",
+    marginBottom: 4,
+  },
+  productPrice: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: Colors.tint,
+    marginBottom: 8,
+  },
+  viewButton: {
+    backgroundColor: Colors.tint,
+    paddingHorizontal: 16,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignSelf: "flex-start",
+  },
+  viewButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  // Shop card styles
+  shopsContainer: {
+    paddingHorizontal: 16,
+    paddingTop: 12,
+  },
+  shopCard: {
+    width: 160,
+    marginRight: 12,
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  shopImage: {
+    width: "100%",
+    height: 100,
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  shopName: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#2c2c2c",
+    marginBottom: 8,
+  },
+  viewShopButton: {
+    backgroundColor: Colors.tint,
+    paddingVertical: 6,
+    borderRadius: 16,
+    alignItems: "center",
+  },
+  viewShopButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontWeight: "600",
+  },
+
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 24,
+    marginHorizontal: 32,
+    minWidth: 280,
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#2c2c2c",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  modalButton: {
+    backgroundColor: Colors.tint,
+    paddingVertical: 12,
+    borderRadius: 8,
+    marginBottom: 12,
+    alignItems: "center",
+  },
+  modalButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  closeButton: {
+    backgroundColor: "transparent",
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ddd",
+  },
+  closeButtonText: {
+    color: "#666",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+
+  // New styles for upstream/main version
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    backgroundColor: "#fff",
+  },
+  sectionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 24,
+    paddingHorizontal: 16,
+  },
   subSectionTitle: {
     fontSize: 16,
     fontWeight: "700",
     color: "#2c2c2c",
   },
-  link: { color: Colors.tint, fontSize: 13, fontWeight: "600" },
-
-  cardPad: { paddingHorizontal: 8, marginTop: 6 },
-
-  shopsRow: {
+  cardPad: {
     paddingHorizontal: 16,
-    paddingTop: 12,
-    paddingBottom: 8,
+    marginTop: 12,
   },
-
   bottomNav: {
     position: "absolute",
-    bottom: 12,
-    left: 16,
-    right: 16,
-    height: 58,
-    borderRadius: 28,
-    backgroundColor: "#fff",
+    bottom: 0,
+    left: 0,
+    right: 0,
     flexDirection: "row",
-    alignItems: "center",
     justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingBottom: 34,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
   },
   homePill: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: Colors.tint,
     paddingHorizontal: 16,
-    height: 38,
-    borderRadius: 19,
-    minWidth: 92,
-    justifyContent: "center",
+    paddingVertical: 8,
+    borderRadius: 20,
   },
   homePillTxt: {
     color: "#fff",
-    fontWeight: "700",
-    marginLeft: 8,
-    fontSize: 13,
-  },
-  navCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    borderWidth: 1,
-    borderColor: "#eaeaea",
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+    marginLeft: 6,
   },
 });

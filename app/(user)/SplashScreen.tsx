@@ -1,9 +1,7 @@
 
 import { router } from "expo-router";
 import React from "react";
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
-
-const { width } = Dimensions.get("window");
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SplashScreen() {
   return (
@@ -82,63 +80,50 @@ export default function SplashScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    backgroundColor: "#000",
   },
   imageGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "center",
-    marginTop: 40,
-    marginHorizontal: 10,
-    
-  },
-  image: {
-    width: width * 0.42,
-    height: width * 0.55,
-    borderRadius: 12,
-    margin: 6,
+    flex: 1,
+    position: "relative",
   },
   overlay: {
-    ...StyleSheet.absoluteFillObject, 
-    backgroundColor: "rgba(0, 0, 0, 1)",
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
   bottomCard: {
-    position: "absolute",
-    bottom: 0,
-    width: "100%",
     backgroundColor: "#fff",
-    borderTopLeftRadius: 50,
-    borderTopRightRadius: 50,
-    paddingVertical: 25,
-    paddingHorizontal: 20,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: -2 },
-    elevation: 8,
-    height: 250,
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: "600",
-    textAlign: "center",
-    marginBottom: 8,
-    color:"#7CB342" ,
-  },
-  subtitle: {
-    fontSize: 14,
-    textAlign: "center",
-    color: "#555",
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: "#28a745",
-    borderRadius: 8,
-    paddingVertical: 12,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    paddingHorizontal: 24,
+    paddingTop: 32,
+    paddingBottom: 40,
     alignItems: "center",
   },
+  title: {
+    color: "#2c2c2c",
+    fontSize: 24,
+    fontWeight: "700",
+    textAlign: "center",
+    marginBottom: 12,
+  },
+  subtitle: {
+    color: "#666",
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 24,
+    lineHeight: 20,
+  },
+  button: {
+    backgroundColor: "#68AE3C",
+    borderRadius: 8,
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    minWidth: 220,
+    alignItems: "center",
+    marginBottom: 8,
+  },
   buttonText: {
-    color: "#fff",
+    color: "#ffffff",
     fontSize: 16,
     fontWeight: "600",
   },

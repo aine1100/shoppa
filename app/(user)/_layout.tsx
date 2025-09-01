@@ -1,10 +1,10 @@
-import React from "react";
-import { Stack, usePathname, router } from "expo-router";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import Entypo from "@expo/vector-icons/Entypo";
 import { Colors } from "@/constants/Colors";
+import Entypo from "@expo/vector-icons/Entypo";
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { router, Stack, usePathname } from "expo-router";
+import React from "react";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function UserLayout() {
   const pathname = usePathname();
@@ -26,6 +26,16 @@ export default function UserLayout() {
       icon: (color: string) => (
         <MaterialIcons name="production-quantity-limits" size={24} color={color} />
       ),
+    },
+    {
+      name: "Chats",
+      route: "/(user)/ChatList",
+      icon: (color: string) => <MaterialIcons name="chat" size={24} color={color} />,
+    },
+    {
+      name: "Recent",
+      route: "/(user)/RecentlyViewed",
+      icon: (color: string) => <MaterialIcons name="history" size={24} color={color} />,
     },
   ] as const;
 

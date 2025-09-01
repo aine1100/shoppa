@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/ThemedText';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
@@ -23,12 +24,15 @@ export function RoleSelector({ selectedRole, onRoleSelect }: RoleSelectorProps) 
             styles.roleCircle,
             selectedRole === 'buyer' && styles.roleCircleSelected
           ]}>
-            <ThemedText style={[
-              styles.roleIcon,
-              selectedRole === 'buyer' && styles.roleIconSelected
-            ]}>
-              🛒
-            </ThemedText>
+            {Ionicons.glyphMap['cart'] ? (
+              <Ionicons name="cart" size={22} color={selectedRole === 'buyer' ? '#FFFFFF' : '#666666'} />
+            ) : (() => {
+              let Lucide: any = null;
+              try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
+              if (!Lucide) return <Ionicons name="help-circle" size={22} color={selectedRole === 'buyer' ? '#FFFFFF' : '#666666'} />;
+              const { ShoppingCart } = Lucide;
+              return <ShoppingCart size={22} color={selectedRole === 'buyer' ? '#FFFFFF' : '#666666'} />;
+            })()}
           </View>
           <ThemedText style={[
             styles.roleText,
@@ -49,12 +53,15 @@ export function RoleSelector({ selectedRole, onRoleSelect }: RoleSelectorProps) 
             styles.roleCircle,
             selectedRole === 'seller' && styles.roleCircleSelected
           ]}>
-            <ThemedText style={[
-              styles.roleIcon,
-              selectedRole === 'seller' && styles.roleIconSelected
-            ]}>
-              🏪
-            </ThemedText>
+            {Ionicons.glyphMap['storefront'] ? (
+              <Ionicons name="storefront" size={22} color={selectedRole === 'seller' ? '#FFFFFF' : '#666666'} />
+            ) : (() => {
+              let Lucide: any = null;
+              try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
+              if (!Lucide) return <Ionicons name="help-circle" size={22} color={selectedRole === 'seller' ? '#FFFFFF' : '#666666'} />;
+              const { Store } = Lucide;
+              return <Store size={22} color={selectedRole === 'seller' ? '#FFFFFF' : '#666666'} />;
+            })()}
           </View>
           <ThemedText style={[
             styles.roleText,
@@ -92,7 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5F5',
   },
   roleOptionSelected: {
-    borderColor: '#7CB342',
+    borderColor: '#68AE3C',
     backgroundColor: '#F8FDF8',
   },
   roleCircle: {
@@ -105,12 +112,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   roleCircleSelected: {
-    backgroundColor: '#7CB342',
+    backgroundColor: '#68AE3C',
   },
   roleIcon: {
-    fontSize: 24,
-  },
-  roleIconSelected: {
     fontSize: 24,
   },
   roleText: {
@@ -119,7 +123,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   roleTextSelected: {
-    color: '#7CB342',
+    color: '#68AE3C',
     fontWeight: '600',
   },
 });

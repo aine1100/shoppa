@@ -53,6 +53,7 @@ export default function LoginScreen() {
             value={email}
             onChangeText={setEmail}
             keyboardType="email-address"
+            leftIconName="mail"
           />
 
           <Input
@@ -61,6 +62,7 @@ export default function LoginScreen() {
             onChangeText={setPassword}
             secureTextEntry
             showPasswordToggle
+            leftIconName="lock-closed"
           />
 
           <Button
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#7CB342',
+    color: '#68AE3C',
     marginBottom: 8,
   },
   subtitle: {
@@ -167,7 +169,7 @@ const styles = StyleSheet.create({
     minHeight: 'auto',
   },
   forgotButtonText: {
-    color: '#7CB342',
+    color: '#68AE3C',
     fontWeight: '500',
     fontSize: 14,
   },

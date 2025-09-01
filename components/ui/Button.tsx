@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  StyleSheet,
-  Text,
-  TextStyle,
-  TouchableOpacity,
-  ViewStyle,
+    StyleSheet,
+    Text,
+    TextStyle,
+    TouchableOpacity,
+    ViewStyle,
 } from "react-native";
 
 export interface ButtonProps {
@@ -60,12 +60,12 @@ const styles = StyleSheet.create({
     minHeight: 56,
   },
   primaryButton: {
-    backgroundColor: "#7CB342",
+    backgroundColor: "#68AE3C",
   },
   secondaryButton: {
     backgroundColor: "transparent",
     borderWidth: 1,
-    borderColor: "#7CB342",
+    borderColor: "#68AE3C",
   },
   disabledButton: {
     backgroundColor: "#E0E0E0",
@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     color: "#FFFFFF",
   },
   secondaryText: {
-    color: "#7CB342",
+    color: "#68AE3C",
   },
   disabledText: {
     color: "#9E9E9E",

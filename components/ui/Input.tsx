@@ -1,4 +1,5 @@
 import { ThemedText } from '@/components/ThemedText';
+import { Ionicons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { StyleSheet, TextInput, TextStyle, TouchableOpacity, View, ViewStyle } from 'react-native';
 
@@ -14,6 +15,7 @@ export interface InputProps {
   showPasswordToggle?: boolean;
   multiline?: boolean;
   numberOfLines?: number;
+  leftIconName?: keyof typeof Ionicons.glyphMap;
 }
 
 export function Input({
@@ -28,6 +30,7 @@ export function Input({
   showPasswordToggle = false,
   multiline = false,
   numberOfLines = 1,
+  leftIconName,
 }: InputProps) {
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
@@ -43,6 +46,22 @@ export function Input({
         isFocused && styles.inputContainerFocused,
         error && styles.inputContainerError
       ]}>
+        {leftIconName && (
+          <View style={styles.leftIcon}>
+            {Ionicons.glyphMap[leftIconName] ? (
+              <Ionicons name={leftIconName} size={18} color={isFocused ? '#68AE3C' : '#999999'} />
+            ) : (() => {
+              let Lucide: any = null;
+              try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
+              if (!Lucide) return <Ionicons name="help-circle" size={18} color={isFocused ? '#68AE3C' : '#999999'} />;
+              const { Mail, User, Lock } = Lucide;
+              if (leftIconName === 'mail') return <Mail size={18} color={isFocused ? '#68AE3C' : '#999999'} />;
+              if (leftIconName === 'person') return <User size={18} color={isFocused ? '#68AE3C' : '#999999'} />;
+              if (leftIconName.includes('lock')) return <Lock size={18} color={isFocused ? '#68AE3C' : '#999999'} />;
+              return <User size={18} color={isFocused ? '#68AE3C' : '#999999'} />;
+            })()}
+          </View>
+        )}
         <TextInput
           style={[styles.input, inputStyle]}
           placeholder={placeholder}
@@ -61,9 +80,15 @@ export function Input({
             style={styles.passwordToggle}
             onPress={togglePasswordVisibility}
           >
-            <ThemedText style={styles.passwordToggleText}>
-              {isPasswordVisible ? '🙈' : '👁️'}
-            </ThemedText>
+            {Ionicons.glyphMap[isPasswordVisible ? 'eye-off' as any : 'eye' as any] ? (
+              <Ionicons name={isPasswordVisible ? 'eye-off' : 'eye'} size={18} color="#999999" />
+            ) : (() => {
+              let Lucide: any = null;
+              try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
+              if (!Lucide) return <Ionicons name="eye" size={18} color="#999999" />;
+              const { Eye, EyeOff } = Lucide;
+              return isPasswordVisible ? <EyeOff size={18} color="#999999" /> : <Eye size={18} color="#999999" />;
+            })()}
           </TouchableOpacity>
         )}
       </View>
@@ -89,9 +114,9 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   inputContainerFocused: {
-    borderColor: '#7CB342',
+    borderColor: '#68AE3C',
     backgroundColor: '#FFFFFF',
-    shadowColor: '#7CB342',
+    shadowColor: '#68AE3C',
     shadowOffset: {
       width: 0,
       height: 0,
@@ -116,6 +141,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333333',
     minHeight: 20,
+  },
+  leftIcon: {
+    marginRight: 8,
   },
   passwordToggle: {
     padding: 4,
