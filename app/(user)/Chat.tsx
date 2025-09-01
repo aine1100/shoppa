@@ -30,21 +30,33 @@ export default function ChatScreen() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "1",
-      text: "Hello! How can I help you today?",
+      text: "Hey Lucas!",
       isUser: false,
       timestamp: "10:30 AM",
     },
     {
       id: "2",
-      text: "Hi! I'm interested in the Nike Air Force shoes. Do you have them in size 42?",
+      text: "Hi Brooke!",
       isUser: true,
       timestamp: "10:32 AM",
     },
     {
       id: "3",
-      text: "Yes, we have them in size 42! They're available in white, black, and red colors. Would you like to see them?",
+      text: "How's your project going?",
       isUser: false,
       timestamp: "10:33 AM",
+    },
+    {
+      id: "4",
+      text: "It's going well. Thanks for asking!",
+      isUser: true,
+      timestamp: "10:35 AM",
+    },
+    {
+      id: "5",
+      text: "No worries. Let me know if you need any help 😊",
+      isUser: false,
+      timestamp: "10:36 AM",
     },
   ]);
 
@@ -73,19 +85,24 @@ export default function ChatScreen() {
           onPress={() => router.back()}
         >
           {Ionicons.glyphMap['arrow-back'] ? (
-            <Ionicons name="arrow-back" size={24} color="#000" />
+            <Ionicons name="arrow-back" size={24} color={Colors.tint} />
           ) : ArrowLeft ? (
-            <ArrowLeft size={24} color="#000" />
+            <ArrowLeft size={24} color={Colors.tint} />
           ) : (
-            <Ionicons name="arrow-back-outline" size={24} color="#000" />
+            <Ionicons name="arrow-back-outline" size={24} color={Colors.tint} />
           )}
         </TouchableOpacity>
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>Simba Supermarket</Text>
-          <Text style={styles.headerSubtitle}>Online now</Text>
+          <Text style={styles.headerTitle}>Brooke Davis</Text>
         </View>
         <TouchableOpacity style={styles.moreButton}>
-          <Ionicons name="ellipsis-vertical" size={24} color="#000" />
+          <View style={styles.avatar}>
+            {Ionicons.glyphMap['person'] ? (
+              <Ionicons name="person" size={20} color={Colors.tint} />
+            ) : (
+              <Ionicons name="person-outline" size={20} color={Colors.tint} />
+            )}
+          </View>
         </TouchableOpacity>
       </View>
 
@@ -133,6 +150,9 @@ export default function ChatScreen() {
       {/* Input */}
       <View style={styles.inputContainer}>
         <View style={styles.inputWrapper}>
+          <TouchableOpacity style={styles.attachButton}>
+            <Ionicons name="add" size={20} color={Colors.tint} />
+          </TouchableOpacity>
           <TextInput
             style={styles.textInput}
             placeholder="Type a message..."
@@ -204,14 +224,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#2c2c2c",
   },
-  headerSubtitle: {
-    fontSize: 14,
-    color: Colors.tint,
-    marginTop: 2,
-  },
   moreButton: {
     width: 40,
     height: 40,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#f0f0f0",
     alignItems: "center",
     justifyContent: "center",
   },
@@ -284,6 +307,15 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     paddingHorizontal: 16,
     paddingVertical: 8,
+  },
+  attachButton: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.tint,
+    alignItems: "center",
+    justifyContent: "center",
+    marginRight: 8,
   },
   textInput: {
     flex: 1,
