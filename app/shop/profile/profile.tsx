@@ -16,10 +16,8 @@ export default function ShopProfileScreen() {
 
   const shopInfo = {
     name: "Shopa",
-    username: "@shopa",
-    followers: "1.2M",
-    following: "234",
-    posts: "1.5K",
+    
+    product: "1.5K",
     rating: 4.8,
     reviews: "12.5K",
     description:
@@ -203,7 +201,6 @@ export default function ShopProfileScreen() {
                   <Ionicons name="checkmark-circle" size={20} color="#4CAF50" />
                 )}
               </View>
-              <Text style={styles.username}>{shopInfo.username}</Text>
               <Text style={styles.location}>📍 {shopInfo.location}</Text>
             </View>
           </View>
@@ -211,17 +208,10 @@ export default function ShopProfileScreen() {
           {/* Stats */}
           <View style={styles.statsContainer}>
             <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{shopInfo.posts}</Text>
-              <Text style={styles.statLabel}>Posts</Text>
+              <Text style={styles.statNumber}>{shopInfo.product}</Text>
+              <Text style={styles.statLabel}>Products</Text>
             </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{shopInfo.followers}</Text>
-              <Text style={styles.statLabel}>Followers</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text style={styles.statNumber}>{shopInfo.following}</Text>
-              <Text style={styles.statLabel}>Following</Text>
-            </View>
+           
             <View style={styles.statItem}>
               <View style={styles.ratingContainer}>
                 <Ionicons name="star" size={16} color="#FFD700" />
@@ -238,27 +228,10 @@ export default function ShopProfileScreen() {
           {/* Action Buttons */}
           <View style={styles.actionButtons}>
             <TouchableOpacity
-              style={[
-                styles.followButton,
-                isFollowing && styles.followingButton,
-              ]}
-              onPress={handleFollow}
-            >
-              <Text
-                style={[
-                  styles.followButtonText,
-                  isFollowing && styles.followingButtonText,
-                ]}
-              >
-                {isFollowing ? "Following" : "Follow"}
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
               style={styles.messageButton}
               onPress={handleMessage}
             >
-              <Ionicons name="chatbubble-outline" size={18} color="#4CAF50" />
-              <Text style={styles.messageButtonText}>Message</Text>
+              <Text style={styles.messageButtonText}>Edit Profile</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.shareButton} onPress={handleShare}>
               <Ionicons name="share-outline" size={18} color="#4CAF50" />
@@ -337,7 +310,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: 20,
     paddingVertical: 15,
-    backgroundColor: "#000",
+    backgroundColor: "#4CAF50",
   },
   headerCenter: {
     flex: 1,

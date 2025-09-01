@@ -1,16 +1,15 @@
+import ProductCard from "@/components/ui/ProductCard";
 import { Colors } from "@/constants/Colors";
-import { Ionicons } from "@expo/vector-icons";
+import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
     Image,
-    Modal,
     ScrollView,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
-    View,
+    View
 } from "react-native";
 
 // Dynamic import for Lucide
@@ -26,46 +25,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.menuButton}>
-          <Ionicons name="menu-outline" size={24} color="#000" />
-        </TouchableOpacity>
-        <View style={styles.searchContainer}>
-          <View style={styles.searchBar}>
-            {Ionicons.glyphMap['camera'] ? (
-              <Ionicons name="camera" size={20} color="#999" />
-            ) : Camera ? (
-              <Camera size={20} color="#999" />
-            ) : (
-              <Ionicons name="camera-outline" size={20} color="#999" />
-            )}
-            <TextInput
-              style={styles.searchInput}
-              placeholder="Search Product"
-              placeholderTextColor="#999"
-            />
-            {Ionicons.glyphMap['search'] ? (
-              <Ionicons name="search" size={20} color="#999" />
-            ) : Search ? (
-              <Search size={20} color="#999" />
-            ) : (
-              <Ionicons name="search-outline" size={20} color="#999" />
-            )}
-          </View>
-        </View>
-        <TouchableOpacity 
-          style={styles.cameraButton}
-          onPress={() => router.push("/(user)/ImageSearch")}
-        >
-          {Ionicons.glyphMap['camera'] ? (
-            <Ionicons name="camera" size={24} color="#000" />
-          ) : Camera ? (
-            <Camera size={24} color="#000" />
-          ) : (
-            <Ionicons name="camera-outline" size={24} color="#000" />
-          )}
-        </TouchableOpacity>
+      <View style={styles.topBar}>
+        {/* <TouchableOpacity style={styles.iconCircle}>
+          <Ionicons name="menu-outline" size={22} color="#111" />
+        </TouchableOpacity> */}
+        {/* <Text style={styles.brand}>Shopa</Text> */}
       </View>
 
       <ScrollView
@@ -88,37 +52,10 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Products Section */}
-        <View style={styles.sectionHeader}>
+        <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Products</Text>
         </View>
-
-        {/* Category Tabs */}
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.categoryContainer}
-        >
-          {categories.map((category) => (
-            <TouchableOpacity
-              key={category}
-              style={[
-                styles.categoryButton,
-                activeCategory === category && styles.activeCategoryButton
-              ]}
-              onPress={() => setActiveCategory(category)}
-            >
-              <Text
-                style={[
-                  styles.categoryText,
-                  activeCategory === category && styles.activeCategoryText
-                ]}
-              >
-                {category}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
+        <View style={{ height: 6 }} />
 
         {/* Latest Section */}
         <View style={styles.sectionHeader}>
@@ -128,27 +65,12 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        {/* Product Card */}
-        <View style={styles.productCard}>
-          <Image
-            source={require("../../assets/images/shoe.png")}
-            style={styles.productImage}
-          />
-          <View style={styles.productInfo}>
-            <Text style={styles.productName}>Nike Air Force Shoe</Text>
-            <Text style={styles.productPrice}>20000 Frw</Text>
-            <TouchableOpacity 
-              style={styles.viewButton}
-              onPress={() => router.push("/(user)/ProductDetail")}
-            >
-              <Text style={styles.viewButtonText}>View</Text>
-            </TouchableOpacity>
-          </View>
+        <View style={styles.cardPad}>
+          <ProductCard />
         </View>
 
-        {/* Shops Section */}
-        <View style={styles.sectionHeader}>
-          <Text style={styles.subsectionTitle}>Shops</Text>
+        <View style={styles.sectionRow}>
+          <Text style={styles.subSectionTitle}>Shops</Text>
           <TouchableOpacity>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
@@ -189,34 +111,24 @@ export default function HomeScreen() {
         </ScrollView>
       </ScrollView>
 
-      {/* Image Search Modal */}
-      <Modal
-        visible={showImageSearch}
-        transparent={true}
-        animationType="fade"
-        onRequestClose={() => setShowImageSearch(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Search product by image</Text>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Upload image</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>Take live image</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.modalButton}>
-              <Text style={styles.modalButtonText}>use google drive</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.closeButton}
-              onPress={() => setShowImageSearch(false)}
-            >
-              <Text style={styles.closeButtonText}>Cancel</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+      <View style={styles.bottomNav}>
+        <TouchableOpacity style={styles.homePill}>
+          <Ionicons name="home" size={18} color="#fff" />
+          <Text style={styles.homePillTxt}>Home</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push("/(user)/Shops")}
+        >
+          <Entypo name="shop" size={24} color={Colors.tint} />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          onPress={() => router.push("/(user)/Products")}
+        >
+          <MaterialIcons name="production-quantity-limits" size={24} color={Colors.tint} />
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -497,5 +409,59 @@ const styles = StyleSheet.create({
     color: "#666",
     fontSize: 16,
     fontWeight: "600",
+  },
+
+  // New styles for upstream/main version
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    backgroundColor: "#fff",
+  },
+  sectionRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 24,
+    paddingHorizontal: 16,
+  },
+  subSectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#2c2c2c",
+  },
+  cardPad: {
+    paddingHorizontal: 16,
+    marginTop: 12,
+  },
+  bottomNav: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    paddingVertical: 12,
+    paddingBottom: 34,
+    borderTopWidth: 1,
+    borderTopColor: "#f0f0f0",
+  },
+  homePill: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: Colors.tint,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  homePillTxt: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+    marginLeft: 6,
   },
 });

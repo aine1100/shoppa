@@ -1,25 +1,78 @@
 
 import { router } from "expo-router";
 import React from "react";
-import { ImageBackground, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function SplashScreen() {
   return (
     <View style={styles.container}>
-      <ImageBackground
-        source={require("../../assets/images/splash.png")}
-        style={styles.background}
-        resizeMode="cover"
-      >
-        <View style={styles.darkOverlay} />
-        <View style={styles.content}>
-          <Text style={styles.title}>You want{"\n"}Authentic, here{"\n"}you go!</Text>
-          <Text style={styles.subtitle}>Find it here, buy it now!</Text>
-          <TouchableOpacity style={styles.button} onPress={() => { router.push("/auth/welcome") }}>
-            <Text style={styles.buttonText}>Get Started</Text>
-          </TouchableOpacity>
-        </View>
-      </ImageBackground>
+      <View style={styles.imageGrid}>
+        <Image source={require("../../assets/images/image_1.png")} 
+        style={{
+          position: "absolute",
+          left: -40,
+          width: 100,
+          height: 250,
+          borderRadius: 20,
+          marginTop: 30
+        }} 
+        />
+        <Image source={require("../../assets/images/image_2.png")} 
+        style={{
+          position: "absolute", 
+          right: -38,
+          width: 100,
+          height: 250,
+          borderRadius: 20,
+          marginTop: 30
+        }}
+         />
+        <Image source={require("../../assets/images/image_3.png")}
+        style={{
+          position: "absolute",
+          left: 90,
+          width: 170,
+          height: 250,
+          borderRadius: 20,
+          top: 50,
+          marginTop: 20
+        }} />
+        <Image source={require("../../assets/images/image_4.png")} style={{
+          position: "absolute",
+          left: -17,
+          width: 170,
+          height: 250,
+          top: 320,
+          borderRadius: 20,
+          marginTop: 18
+
+        }} />
+        <Image source={require("../../assets/images/image_5.png")} style={{
+          position: "absolute",
+          left: 165,
+          width: 170,
+          height: 250,
+          top: 320,
+          borderRadius: 20,
+          marginTop: 18
+        }} />
+        <View style={styles.overlay} />
+      </View>
+
+      
+      <View style={styles.bottomCard}>
+        <Text style={styles.title}>Connect With Different Shops</Text>
+        <Text style={styles.subtitle}>
+          Get to know and buy with inhand with different shops near your home with us
+        </Text>
+        <TouchableOpacity style={styles.button} onPress={() => { router.push("/(user)/Home") }}>
+          <Text style={styles.buttonText}>Get Started</Text>
+        </TouchableOpacity>
+        <View style={{marginBottom: 5}} />
+        <TouchableOpacity style={styles.button} onPress={() => { router.push("/shop/onBoarding/OnBoardingScreen") }}>
+          <Text style={styles.buttonText}>Your part</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -29,39 +82,45 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
   },
-  background: {
+  imageGrid: {
     flex: 1,
-    justifyContent: "flex-end",
+    position: "relative",
   },
-  darkOverlay: {
+  overlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.35)",
+    backgroundColor: "rgba(0,0,0,0.3)",
   },
-  content: {
+  bottomCard: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
     paddingHorizontal: 24,
+    paddingTop: 32,
     paddingBottom: 40,
+    alignItems: "center",
   },
   title: {
-    color: "#ffffff",
-    fontSize: 28,
+    color: "#2c2c2c",
+    fontSize: 24,
     fontWeight: "700",
     textAlign: "center",
-    marginBottom: 8,
+    marginBottom: 12,
   },
   subtitle: {
-    color: "#E5E7EB",
+    color: "#666",
     fontSize: 14,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 24,
+    lineHeight: 20,
   },
   button: {
-    alignSelf: "center",
     backgroundColor: "#68AE3C",
     borderRadius: 8,
     paddingVertical: 12,
     paddingHorizontal: 24,
     minWidth: 220,
     alignItems: "center",
+    marginBottom: 8,
   },
   buttonText: {
     color: "#ffffff",

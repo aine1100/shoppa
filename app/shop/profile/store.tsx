@@ -1,6 +1,7 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Button } from "@/components/ui/Button";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
     Image,
@@ -11,6 +12,7 @@ import {
 } from "react-native";
 
 export default function StoreProfileScreen() {
+  const router=useRouter()
   return (
     <ThemedView style={styles.container}>
       {/* Header */}
@@ -89,8 +91,8 @@ export default function StoreProfileScreen() {
             />
 
             <Button
-              title="Edit Profile"
-              onPress={() => {}}
+              title="Continue"
+              onPress={() => {router.push("/(main)/home")}}
               variant="secondary"
               style={styles.editButtonSecondary}
               textStyle={styles.editButtonSecondaryText}

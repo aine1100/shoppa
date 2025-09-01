@@ -50,18 +50,7 @@ export default function VerifyScreen() {
 
         {/* Form */}
         <View style={styles.formContainer}>
-          <Input
-            placeholder="National ID"
-            value={nationalId}
-            onChangeText={setNationalId}
-          />
-
-          {/* Upload National ID */}
-          <TouchableOpacity style={styles.uploadContainer} onPress={handleUploadId}>
-            <ThemedText style={styles.uploadText}>Upload National ID</ThemedText>
-            <ThemedText style={styles.uploadIcon}>📤</ThemedText>
-          </TouchableOpacity>
-
+         
           <Input
             placeholder="Phone No"
             value={phoneNo}

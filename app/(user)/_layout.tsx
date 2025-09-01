@@ -44,7 +44,6 @@ export default function UserLayout() {
       {/* Render all (user) screens */}
       <Stack screenOptions={{ headerShown: false }} />
 
-      {/* Bottom nav */}
       <View style={styles.bottomNav}>
         {tabs.map((tab) => {
           const isActive = pathname === tab.route;
