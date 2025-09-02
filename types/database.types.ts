@@ -14,9 +14,34 @@ export type Database = {
   }
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           amount: number
+          category_id: string | null
           created_at: string | null
           description: string | null
           id: string
@@ -30,6 +55,7 @@ export type Database = {
         }
         Insert: {
           amount?: number
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -43,6 +69,7 @@ export type Database = {
         }
         Update: {
           amount?: number
+          category_id?: string | null
           created_at?: string | null
           description?: string | null
           id?: string
@@ -55,6 +82,13 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "products_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "products_shop_id_fkey"
             columns: ["shop_id"]

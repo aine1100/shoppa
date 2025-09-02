@@ -1,8 +1,7 @@
-import ProductCard from "@/components/ui/ProductCard";
 import { Colors } from "@/constants/Colors";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
     Image,
     ScrollView,
@@ -11,25 +10,13 @@ import {
     TouchableOpacity,
     View
 } from "react-native";
-
-// Dynamic import for Lucide
-let Lucide: any = null;
-try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
-const { Camera, Search } = Lucide || {};
+import ProductsList from "@/components/ui/ProductList";
+import CategoriesList from "@/components/ui/CategoriesList";
 
 export default function HomeScreen() {
-  const [activeCategory, setActiveCategory] = useState("All");
-  const [showImageSearch, setShowImageSearch] = useState(false);
-
-  const categories = ["All", "Clothes", "Food", "Furniture", "Fruits"];
-
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
-        {/* <TouchableOpacity style={styles.iconCircle}>
-          <Ionicons name="menu-outline" size={22} color="#111" />
-        </TouchableOpacity> */}
-        {/* <Text style={styles.brand}>Shopa</Text> */}
       </View>
 
       <ScrollView
@@ -52,26 +39,38 @@ export default function HomeScreen() {
           />
         </View>
 
+        {/* Categories */}
+        <View style={styles.sectionRow}>
+          <Text style={styles.sectionTitle}>Categories</Text>
+        </View>
+        
+        <CategoriesList />
+
+        {/* Products Section */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>Products</Text>
         </View>
         <View style={{ height: 6 }} />
 
-        {/* Latest Section */}
+        {/* Latest Products - Horizontal Scroll */}
         <View style={styles.sectionHeader}>
           <Text style={styles.subsectionTitle}>Latest</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/(user)/Products")}>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.cardPad}>
-          <ProductCard />
-        </View>
+        {/* Horizontal Products List - Limited to 5 items */}
+        <ProductsList 
+          horizontal={true} 
+          showLoadMore={false} 
+          limit={5} 
+        />
 
+        {/* Shops Section */}
         <View style={styles.sectionRow}>
           <Text style={styles.subSectionTitle}>Shops</Text>
-          <TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push("/(user)/Shops")}>
             <Text style={styles.seeAllText}>See all</Text>
           </TouchableOpacity>
         </View>
@@ -111,6 +110,7 @@ export default function HomeScreen() {
         </ScrollView>
       </ScrollView>
 
+      {/* Bottom Navigation */}
       <View style={styles.bottomNav}>
         <TouchableOpacity style={styles.homePill}>
           <Ionicons name="home" size={18} color="#fff" />
@@ -137,46 +137,6 @@ const styles = StyleSheet.create({
   container: { 
     flex: 1, 
     backgroundColor: "#fff" 
-  },
-
-  // Header styles
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    backgroundColor: "#fff",
-  },
-  menuButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  searchContainer: {
-    flex: 1,
-    marginHorizontal: 12,
-  },
-  searchBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-  },
-  searchInput: {
-    flex: 1,
-    marginHorizontal: 8,
-    fontSize: 16,
-    color: "#000",
-  },
-  cameraButton: {
-    width: 40,
-    height: 40,
-    alignItems: "center",
-    justifyContent: "center",
   },
 
   // Content styles
@@ -226,8 +186,25 @@ const styles = StyleSheet.create({
     top: 15
   },
 
+  // Header styles
+  topBar: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingHorizontal: 16,
+    paddingBottom: 16,
+    backgroundColor: "#fff",
+  },
+
   // Section styles
   sectionHeader: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    marginTop: 24,
+    paddingHorizontal: 16,
+  },
+  sectionRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -244,83 +221,15 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     color: "#2c2c2c",
   },
+  subSectionTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    color: "#2c2c2c",
+  },
   seeAllText: { 
     color: Colors.tint, 
     fontSize: 13, 
     fontWeight: "600" 
-  },
-
-  // Category styles
-  categoryContainer: {
-    paddingHorizontal: 16,
-    marginTop: 12,
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 12,
-    borderRadius: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  activeCategoryButton: {
-    backgroundColor: Colors.tint,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#666",
-  },
-  activeCategoryText: {
-    color: "#fff",
-  },
-
-  // Product card styles
-  productCard: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    marginHorizontal: 16,
-    marginTop: 12,
-    borderRadius: 12,
-    padding: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  productImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 8,
-  },
-  productInfo: {
-    flex: 1,
-    marginLeft: 12,
-    justifyContent: "space-between",
-  },
-  productName: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#2c2c2c",
-    marginBottom: 4,
-  },
-  productPrice: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: Colors.tint,
-    marginBottom: 8,
-  },
-  viewButton: {
-    backgroundColor: Colors.tint,
-    paddingHorizontal: 16,
-    paddingVertical: 6,
-    borderRadius: 16,
-    alignSelf: "flex-start",
-  },
-  viewButtonText: {
-    color: "#fff",
-    fontSize: 12,
-    fontWeight: "600",
   },
 
   // Shop card styles
@@ -364,78 +273,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
 
-  // Modal styles
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  modalContent: {
-    backgroundColor: "#fff",
-    borderRadius: 16,
-    padding: 24,
-    marginHorizontal: 32,
-    minWidth: 280,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#2c2c2c",
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  modalButton: {
-    backgroundColor: Colors.tint,
-    paddingVertical: 12,
-    borderRadius: 8,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  modalButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  closeButton: {
-    backgroundColor: "transparent",
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#ddd",
-  },
-  closeButtonText: {
-    color: "#666",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-  // New styles for upstream/main version
-  topBar: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 50,
-    paddingHorizontal: 16,
-    paddingBottom: 16,
-    backgroundColor: "#fff",
-  },
-  sectionRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    marginTop: 24,
-    paddingHorizontal: 16,
-  },
-  subSectionTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    color: "#2c2c2c",
-  },
-  cardPad: {
-    paddingHorizontal: 16,
-    marginTop: 12,
-  },
+  // Bottom navigation
   bottomNav: {
     position: "absolute",
     bottom: 0,
