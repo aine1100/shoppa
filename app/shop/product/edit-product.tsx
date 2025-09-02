@@ -1,23 +1,40 @@
-
+import { LoadingSpinner } from '@/components/ui/LoadingSpinner';
+import { useCategories, useProduct, useUpdateProduct } from '@/hooks/useProducts';
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { Image, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { router, useLocalSearchParams } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const EditProductScreen = () => {
+  const { id } = useLocalSearchParams();
+  const productId = Array.isArray(id) ? id[0] : id || '';
+  
+  const { data: productData, isLoading: productLoading } = useProduct(productId);
+  const { data: categoriesData } = useCategories();
+  const updateProductMutation = useUpdateProduct();
+
   const [formData, setFormData] = useState({
-    name: 'Nike Sneakers',
-    price: '1500 $',
-    quantity: '20',
-    size: '12',
-    color: 'Red',
-    description: 'Perhaps the most iconic sneaker of all-time, this original "Chicago" colorway is the cornerstone to any sneaker collection. Made famous in 1985 by Michael Jordan, the shoe has stood the test of time, becoming the most famous colorway of the Air Jordan 1. The 2015 release saw...'
+    name: '',
+    price: '',
+    amount: '',
+    category_id: '',
+    description: ''
   });
 
-  const [selectedImages, setSelectedImages] = useState([
-    require('@/assets/images/product.png')
-  ]);
+  // Load product data when component mounts
+  useEffect(() => {
+    if (productData?.success && productData.product) {
+      const product = productData.product;
+      setFormData({
+        name: product.name,
+        price: product.price.toString(),
+        amount: product.amount.toString(),
+        category_id: product.category_id || '',
+        description: product.description || ''
+      });
+    }
+  }, [productData]);
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
@@ -26,18 +43,77 @@ const EditProductScreen = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Handle save logic
-    router.back();
+  const handleSave = async () => {
+    // Validation
+    if (!formData.name.trim()) {
+      Alert.alert("Error", "Please enter a product name");
+      return;
+    }
+
+    if (!formData.price.trim()) {
+      Alert.alert("Error", "Please enter a price");
+      return;
+    }
+
+    const price = parseFloat(formData.price);
+    if (isNaN(price) || price <= 0) {
+      Alert.alert("Error", "Please enter a valid price");
+      return;
+    }
+
+    const amount = formData.amount ? parseInt(formData.amount) : 0;
+    if (isNaN(amount) || amount < 0) {
+      Alert.alert("Error", "Please enter a valid quantity");
+      return;
+    }
+
+    try {
+      const result = await updateProductMutation.mutateAsync({
+        productId,
+        updates: {
+          name: formData.name.trim(),
+          description: formData.description.trim() || undefined,
+          price,
+          amount,
+          category_id: formData.category_id || undefined,
+        }
+      });
+
+      if (result.success) {
+        Alert.alert("Success", "Product updated successfully!", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        Alert.alert("Error", result.error || "Failed to update product");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to update product. Please try again.");
+    }
   };
 
   const handleCancel = () => {
     router.back();
   };
 
-  const handleImageUpload = () => {
-    // Handle image upload logic
-  };
+  if (productLoading) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <LoadingSpinner />
+        <Text style={styles.loadingText}>Loading product...</Text>
+      </View>
+    );
+  }
+
+  if (!productData?.success || !productData.product) {
+    return (
+      <View style={[styles.container, styles.centered]}>
+        <Text style={styles.errorText}>Product not found</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -46,68 +122,69 @@ const EditProductScreen = () => {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Edit Product</Text>
-        <TouchableOpacity onPress={handleSave}>
-          <Text style={styles.saveButton}>Save</Text>
+        <TouchableOpacity onPress={handleSave} disabled={updateProductMutation.isPending}>
+          <Text style={[styles.saveButton, updateProductMutation.isPending && styles.disabledText]}>
+            {updateProductMutation.isPending ? "Saving..." : "Save"}
+          </Text>
         </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Name</Text>
+          <Text style={styles.label}>Product Name *</Text>
           <TextInput
             style={styles.input}
             value={formData.name}
             onChangeText={(value) => handleInputChange('name', value)}
             placeholder="Product name"
+            placeholderTextColor="#999"
           />
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Price</Text>
+          <Text style={styles.label}>Price *</Text>
           <TextInput
             style={styles.input}
             value={formData.price}
             onChangeText={(value) => handleInputChange('price', value)}
             placeholder="Price"
-            keyboardType="numeric"
+            placeholderTextColor="#999"
+            keyboardType="decimal-pad"
           />
         </View>
 
         <View style={styles.formGroup}>
-          <Text style={styles.label}>Quantity</Text>
-          <View style={styles.selectInput}>
-            <TextInput
-              style={styles.selectText}
-              value={formData.quantity}
-              onChangeText={(value) => handleInputChange('quantity', value)}
-              placeholder="Quantity"
-              keyboardType="numeric"
-            />
-            <Ionicons name="chevron-down" size={20} color="#666" />
-          </View>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Size</Text>
-          <View style={styles.selectInput}>
-            <TextInput
-              style={styles.selectText}
-              value={formData.size}
-              onChangeText={(value) => handleInputChange('size', value)}
-              placeholder="Size"
-            />
-            <Ionicons name="chevron-down" size={20} color="#666" />
-          </View>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Color</Text>
+          <Text style={styles.label}>Stock Quantity</Text>
           <TextInput
             style={styles.input}
-            value={formData.color}
-            onChangeText={(value) => handleInputChange('color', value)}
-            placeholder="Color"
+            value={formData.amount}
+            onChangeText={(value) => handleInputChange('amount', value)}
+            placeholder="Quantity"
+            placeholderTextColor="#999"
+            keyboardType="number-pad"
           />
+        </View>
+
+        <View style={styles.formGroup}>
+          <Text style={styles.label}>Category</Text>
+          <TouchableOpacity 
+            style={styles.selectInput}
+            onPress={() => {
+              // For now, just show available categories in an alert
+              if (categoriesData?.success && categoriesData.categories) {
+                const categoryNames = categoriesData.categories.map((cat: any) => cat.name).join(', ');
+                Alert.alert("Available Categories", categoryNames || "No categories available");
+              }
+            }}
+          >
+            <Text style={[styles.selectText, !formData.category_id && { color: '#999' }]}>
+              {formData.category_id ? 
+                categoriesData?.categories?.find((cat: any) => cat.id === formData.category_id)?.name || 'Select Category'
+                : 'Select Category'
+              }
+            </Text>
+            <Ionicons name="chevron-down" size={20} color="#999" />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.formGroup}>
@@ -116,42 +193,28 @@ const EditProductScreen = () => {
             style={[styles.input, styles.textArea]}
             value={formData.description}
             onChangeText={(value) => handleInputChange('description', value)}
-            placeholder="Product description"
+            placeholder="Product description..."
+            placeholderTextColor="#999"
             multiline
             numberOfLines={6}
             textAlignVertical="top"
           />
         </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Upload</Text>
-          <View style={styles.imageContainer}>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-              {selectedImages.map((image, index) => (
-                <View key={index} style={styles.imageWrapper}>
-                  <Image source={image} style={styles.uploadedImage} />
-                  <TouchableOpacity style={styles.imageNavButton}>
-                    <Ionicons name="chevron-forward" size={20} color="#666" />
-                  </TouchableOpacity>
-                </View>
-              ))}
-            </ScrollView>
-            <View style={styles.imageDots}>
-              <View style={[styles.dot, styles.activeDot]} />
-              <View style={styles.dot} />
-              <View style={styles.dot} />
-              <View style={styles.dot} />
-              <View style={styles.dot} />
-            </View>
-          </View>
-        </View>
-
         <View style={styles.actionButtons}>
           <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.saveActionButton} onPress={handleSave}>
-            <Text style={styles.saveActionButtonText}>Save</Text>
+          <TouchableOpacity
+            style={[styles.saveActionButton, updateProductMutation.isPending && styles.disabledButton]}
+            onPress={handleSave}
+            disabled={updateProductMutation.isPending}
+          >
+            {updateProductMutation.isPending ? (
+              <LoadingSpinner size={16} color="white" />
+            ) : (
+              <Text style={styles.saveActionButtonText}>Save Changes</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -163,6 +226,30 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#666',
+  },
+  errorText: {
+    fontSize: 18,
+    color: '#333',
+    marginBottom: 20,
+  },
+  backButton: {
+    backgroundColor: '#4CAF50',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 8,
+  },
+  backButtonText: {
+    color: 'white',
+    fontWeight: '600',
   },
   header: {
     flexDirection: 'row',
@@ -225,45 +312,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
   },
-  imageContainer: {
-    marginTop: 10,
-  },
-  imageWrapper: {
-    position: 'relative',
-    marginRight: 10,
-  },
-  uploadedImage: {
-    width: 300,
-    height: 200,
-    borderRadius: 12,
-  },
-  imageNavButton: {
-    position: 'absolute',
-    right: 10,
-    top: '50%',
-    transform: [{ translateY: -15 }],
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    width: 30,
-    height: 30,
-    borderRadius: 15,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageDots: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 15,
-  },
-  dot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
-    backgroundColor: '#e0e0e0',
-    marginHorizontal: 4,
-  },
-  activeDot: {
-    backgroundColor: '#4CAF50',
-  },
   actionButtons: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -296,6 +344,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     fontWeight: '600',
+  },
+  disabledText: {
+    opacity: 0.5,
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
 });
 

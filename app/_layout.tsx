@@ -1,8 +1,11 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
+import { QueryClientProvider } from '@tanstack/react-query';
 import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
+
+import { queryClient } from '@/lib/queryClient';
 
 export default function RootLayout() {
   const [loaded] = useFonts({
@@ -15,15 +18,16 @@ export default function RootLayout() {
   }
 
   return (
-    <ThemeProvider value={DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="index" />
-        <Stack.Screen name="(main)" />
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="calendar-demo" />
-        <Stack.Screen name="+not-found" options={{ headerShown: true }} />
-      </Stack>
-      <StatusBar style="dark" />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider value={DefaultTheme}>
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="(main)" />
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="+not-found" options={{ headerShown: true }} />
+        </Stack>
+        <StatusBar style="dark" />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

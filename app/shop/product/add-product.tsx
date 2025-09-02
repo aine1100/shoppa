@@ -1,7 +1,11 @@
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useCurrentUser } from "@/hooks/useAuth";
+import { useCategories, useCreateProduct } from "@/hooks/useProducts";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React, { useState } from "react";
 import {
+  Alert,
   ScrollView,
   StyleSheet,
   Text,
@@ -12,12 +16,15 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddProductScreen = () => {
+  const { data: authData, isLoading: authLoading } = useCurrentUser();
+  const createProductMutation = useCreateProduct();
+  const { data: categoriesData } = useCategories();
+
   const [formData, setFormData] = useState({
     name: "",
     price: "",
-    quantity: "20",
-    size: "XXL",
-    color: "",
+    amount: "",
+    category_id: "",
     description: "",
   });
 
@@ -28,9 +35,55 @@ const AddProductScreen = () => {
     }));
   };
 
-  const handleSave = () => {
-    // Handle save logic
-    router.back();
+  const handleSave = async () => {
+    // Validation
+    if (!formData.name.trim()) {
+      Alert.alert("Error", "Please enter a product name");
+      return;
+    }
+
+    if (!formData.price.trim()) {
+      Alert.alert("Error", "Please enter a price");
+      return;
+    }
+
+    const price = parseFloat(formData.price);
+    if (isNaN(price) || price <= 0) {
+      Alert.alert("Error", "Please enter a valid price");
+      return;
+    }
+
+    const amount = formData.amount ? parseInt(formData.amount) : 0;
+    if (isNaN(amount) || amount < 0) {
+      Alert.alert("Error", "Please enter a valid quantity");
+      return;
+    }
+
+    if (!authData?.shop?.id) {
+      Alert.alert("Error", "Shop not found. Please complete your shop setup first.");
+      return;
+    }
+
+    try {
+      const result = await createProductMutation.mutateAsync({
+        name: formData.name.trim(),
+        description: formData.description.trim() || undefined,
+        price,
+        amount,
+        shop_id: authData.shop.id,
+        category_id: formData.category_id || undefined,
+      });
+
+      if (result.success) {
+        Alert.alert("Success", "Product created successfully!", [
+          { text: "OK", onPress: () => router.back() },
+        ]);
+      } else {
+        Alert.alert("Error", result.error || "Failed to create product");
+      }
+    } catch (error) {
+      Alert.alert("Error", "Failed to create product. Please try again.");
+    }
   };
 
   const handleCancel = () => {
@@ -52,74 +105,75 @@ const AddProductScreen = () => {
           <Ionicons name="arrow-back" size={24} color="#333" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add Product</Text>
-        <TouchableOpacity onPress={handleSave}>
-          <Text style={styles.saveButton}>Save</Text>
+        <TouchableOpacity onPress={handleSave} disabled={createProductMutation.isPending}>
+          <Text style={[styles.saveButton, createProductMutation.isPending && styles.disabledText]}>
+            {createProductMutation.isPending ? "Saving..." : "Save"}
+          </Text>
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Name</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.name}
-            onChangeText={(value) => handleInputChange("name", value)}
-            placeholder="e.g Dress"
-            placeholderTextColor="#999"
-          />
+      {authLoading ? (
+        <View style={styles.loadingContainer}>
+          <LoadingSpinner />
         </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Price</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.price}
-            onChangeText={(value) => handleInputChange("price", value)}
-            placeholder="e.g 20$"
-            placeholderTextColor="#999"
-            keyboardType="numeric"
-          />
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Quantity</Text>
-          <View style={styles.selectInput}>
+      ) : (
+        <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Product Name *</Text>
             <TextInput
-              style={styles.selectText}
-              value={formData.quantity}
-              onChangeText={(value) => handleInputChange("quantity", value)}
-              placeholder="20"
-              placeholderTextColor="#999"
-              keyboardType="numeric"
-            />
-            <Ionicons name="chevron-down" size={20} color="#666" />
-          </View>
-        </View>
-
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Size</Text>
-          <View style={styles.selectInput}>
-            <TextInput
-              style={styles.selectText}
-              value={formData.size}
-              onChangeText={(value) => handleInputChange("size", value)}
-              placeholder="XXL"
+              style={styles.input}
+              value={formData.name}
+              onChangeText={(value) => handleInputChange("name", value)}
+              placeholder="e.g. Summer Dress"
               placeholderTextColor="#999"
             />
-            <Ionicons name="chevron-down" size={20} color="#666" />
           </View>
-        </View>
 
-        <View style={styles.formGroup}>
-          <Text style={styles.label}>Color</Text>
-          <TextInput
-            style={styles.input}
-            value={formData.color}
-            onChangeText={(value) => handleInputChange("color", value)}
-            placeholder="e.g Blue"
-            placeholderTextColor="#999"
-          />
-        </View>
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Price *</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.price}
+              onChangeText={(value) => handleInputChange("price", value)}
+              placeholder="e.g. 29.99"
+              placeholderTextColor="#999"
+              keyboardType="decimal-pad"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Stock Quantity</Text>
+            <TextInput
+              style={styles.input}
+              value={formData.amount}
+              onChangeText={(value) => handleInputChange("amount", value)}
+              placeholder="e.g. 50"
+              placeholderTextColor="#999"
+              keyboardType="number-pad"
+            />
+          </View>
+
+          <View style={styles.formGroup}>
+            <Text style={styles.label}>Category</Text>
+            <TouchableOpacity 
+              style={styles.selectInput}
+              onPress={() => {
+                // For now, just show available categories in an alert
+                if (categoriesData?.success && categoriesData.categories) {
+                  const categoryNames = categoriesData.categories.map((cat: any) => cat.name).join(', ');
+                  Alert.alert("Available Categories", categoryNames || "No categories available");
+                }
+              }}
+            >
+              <Text style={[styles.selectText, !formData.category_id && { color: '#999' }]}>
+                {formData.category_id ? 
+                  categoriesData?.categories?.find((cat: any) => cat.id === formData.category_id)?.name || 'Select Category'
+                  : 'Select Category'
+                }
+              </Text>
+              <Ionicons name="chevron-down" size={20} color="#999" />
+            </TouchableOpacity>
+          </View>
 
         <View style={styles.formGroup}>
           <Text style={styles.label}>Description</Text>
@@ -165,13 +219,19 @@ const AddProductScreen = () => {
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.saveActionButton}
+            style={[styles.saveActionButton, createProductMutation.isPending && styles.disabledButton]}
             onPress={handleSave}
+            disabled={createProductMutation.isPending}
           >
-            <Text style={styles.saveActionButtonText}>Save</Text>
+            {createProductMutation.isPending ? (
+              <LoadingSpinner size={16} color="white" />
+            ) : (
+              <Text style={styles.saveActionButtonText}>Save Product</Text>
+            )}
           </TouchableOpacity>
         </View>
       </ScrollView>
+      )}
     </SafeAreaView>
   );
 };
@@ -315,6 +375,17 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "white",
     fontWeight: "600",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  disabledText: {
+    opacity: 0.5,
+  },
+  disabledButton: {
+    opacity: 0.7,
   },
 });
 

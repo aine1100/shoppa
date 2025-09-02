@@ -1,18 +1,36 @@
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Button } from "@/components/ui/Button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useCurrentUser } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 export default function StoreProfileScreen() {
-  const router=useRouter()
+  const router = useRouter();
+  const { data: authData, isLoading, error } = useCurrentUser();
+
+  if (isLoading) {
+    return (
+      <ThemedView style={[styles.container, styles.centered]}>
+        <LoadingSpinner />
+      </ThemedView>
+    );
+  }
+
+  if (error || !authData?.success || !authData.user) {
+    router.push("/shop/auth/login");
+    return null;
+  }
+
+  const { user, shop } = authData;
   return (
     <ThemedView style={styles.container}>
       {/* Header */}
@@ -44,17 +62,20 @@ export default function StoreProfileScreen() {
 
             <View style={styles.storeInfo}>
               <View style={styles.storeNameContainer}>
-                <ThemedText style={styles.storeName}>Flove Store</ThemedText>
+                <ThemedText style={styles.storeName}>
+                  {shop?.title || user.full_name || "My Store"}
+                </ThemedText>
                 <View style={styles.verifiedBadge}>
                   <ThemedText style={styles.verifiedIcon}>✓</ThemedText>
                 </View>
               </View>
 
-              <ThemedText style={styles.storeType}>COMPANY</ThemedText>
+              <ThemedText style={styles.storeType}>
+                {user.role.toUpperCase().replace('_', ' ')}
+              </ThemedText>
 
               <ThemedText style={styles.storeDescription}>
-                is a brand that empowers women through creativity and
-                craftsmanship.
+                {shop?.description || "Welcome to my digital store!"}
               </ThemedText>
 
               <View style={styles.statsContainer}>
@@ -65,7 +86,7 @@ export default function StoreProfileScreen() {
           </View>
 
           <ThemedText style={styles.fullDescription}>
-            is a brand that empowers women through creativity and craftsmanship.
+            {shop?.description || "Welcome to my digital store! Start building your online presence today."}
           </ThemedText>
 
           {/* Company Tags */}
@@ -85,14 +106,14 @@ export default function StoreProfileScreen() {
           <View style={styles.actionButtons}>
             <Button
               title="Edit Profile"
-              onPress={() => {}}
+              onPress={() => router.push("/shop/profile/edit-store")}
               variant="primary"
               style={styles.editButton}
             />
 
             <Button
               title="Continue"
-              onPress={() => {router.push("/(main)/home")}}
+              onPress={() => {router.push("/shop/profile/profile")}}
               variant="secondary"
               style={styles.editButtonSecondary}
               textStyle={styles.editButtonSecondaryText}
@@ -124,6 +145,10 @@ export default function StoreProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: "row",

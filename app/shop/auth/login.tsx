@@ -1,33 +1,76 @@
-import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
-import { Button } from '@/components/ui/Button';
-import { Checkbox } from '@/components/ui/Checkbox';
-import { Input } from '@/components/ui/Input';
-import { router } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/ThemedView";
+import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { Input } from "@/components/ui/Input";
+import { useGoogleSignIn, useResetPassword, useSignIn } from "@/hooks/useAuth";
+import React, { useState } from "react";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
-    // Navigate to main app
-    router.push('/(main)/home');
+  const signInMutation = useSignIn();
+  const googleSignInMutation = useGoogleSignIn();
+  const resetPasswordMutation = useResetPassword();
+
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+
+    try {
+      const result = await signInMutation.mutateAsync({
+        email: email.trim(),
+        password,
+      });
+
+      if (!result.success) {
+        Alert.alert("Login Failed", result.error || "Invalid credentials");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to sign in. Please try again.");
+    }
   };
 
-  const handleForgotPassword = () => {
-    console.log('Forgot password pressed');
+  const handleForgotPassword = async () => {
+    if (!email.trim()) {
+      Alert.alert("Error", "Please enter your email address first");
+      return;
+    }
+
+    try {
+      const result = await resetPasswordMutation.mutateAsync(email.trim());
+      if (result.success) {
+        Alert.alert("Success", "Password reset email sent. Please check your inbox.");
+      } else {
+        Alert.alert("Error", result.error || "Failed to send reset email");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to send reset email. Please try again.");
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Google login pressed');
+  const handleGoogleLogin = async () => {
+    try {
+      const result = await googleSignInMutation.mutateAsync();
+      if (!result.success) {
+        Alert.alert("Google Sign In Failed", result.error || "An error occurred");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to sign in with Google. Please try again.");
+    };
   };
 
   return (
     <ThemedView style={styles.container}>
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
         {/* Title Section */}
         <View style={styles.titleContainer}>
           <ThemedText type="title" style={styles.title}>
@@ -66,10 +109,11 @@ export default function LoginScreen() {
           />
 
           <Button
-            title="Login"
+            title={signInMutation.isPending ? "Signing in..." : "Login"}
             onPress={handleLogin}
             variant="primary"
             style={styles.loginButton}
+            disabled={signInMutation.isPending}
           />
 
           {/* Remember Me and Forgot Password */}
@@ -80,11 +124,12 @@ export default function LoginScreen() {
               label="Remember Me"
             />
             <Button
-              title="Forgot Password?"
+              title={resetPasswordMutation.isPending ? "Sending..." : "Forgot Password?"}
               onPress={handleForgotPassword}
               variant="secondary"
               style={styles.forgotButton}
               textStyle={styles.forgotButtonText}
+              disabled={resetPasswordMutation.isPending}
             />
           </View>
 
@@ -97,11 +142,12 @@ export default function LoginScreen() {
 
           {/* Google Login */}
           <Button
-            title="G Continue with Google"
+            title={googleSignInMutation.isPending ? "Signing in..." : "G Continue with Google"}
             onPress={handleGoogleLogin}
             variant="secondary"
             style={styles.googleButton}
             textStyle={styles.googleButtonText}
+            disabled={googleSignInMutation.isPending}
           />
         </View>
 
@@ -119,25 +165,25 @@ const styles = StyleSheet.create({
     paddingTop: 60,
   },
   titleContainer: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 24,
     paddingHorizontal: 32,
   },
   title: {
     fontSize: 32,
-    fontWeight: 'bold',
-    color: '#68AE3C',
+    fontWeight: "bold",
+    color: "#68AE3C",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    color: '#666666',
-    textAlign: 'center',
+    color: "#666666",
+    textAlign: "center",
   },
   progressContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 24,
     gap: 8,
   },
@@ -145,7 +191,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 4,
     borderRadius: 2,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
   },
   formContainer: {
     paddingHorizontal: 32,
@@ -156,54 +202,54 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   optionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 32,
   },
   forgotButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: "transparent",
     borderWidth: 0,
     paddingVertical: 0,
     paddingHorizontal: 0,
-    minHeight: 'auto',
+    minHeight: "auto",
   },
   forgotButtonText: {
-    color: '#68AE3C',
-    fontWeight: '500',
+    color: "#68AE3C",
+    fontWeight: "500",
     fontSize: 14,
   },
   dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 24,
   },
   dividerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#E0E0E0',
+    backgroundColor: "#E0E0E0",
   },
   dividerText: {
     marginHorizontal: 16,
-    color: '#999999',
+    color: "#999999",
     fontSize: 14,
   },
   googleButton: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderWidth: 1,
-    borderColor: '#E0E0E0',
+    borderColor: "#E0E0E0",
     marginBottom: 40,
   },
   googleButtonText: {
-    color: '#333333',
-    fontWeight: '500',
+    color: "#333333",
+    fontWeight: "500",
   },
   bottomIndicator: {
     width: 134,
     height: 5,
-    backgroundColor: '#000000',
+    backgroundColor: "#000000",
     borderRadius: 2.5,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 20,
   },
 });
