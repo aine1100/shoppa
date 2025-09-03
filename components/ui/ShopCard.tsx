@@ -1,17 +1,34 @@
+// components/ui/ShopCard.tsx
 import { Colors } from "@/constants/Colors";
 import { router } from "expo-router";
 import React from "react";
 import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Tables } from "@/types/database.types";
 
-export default function ShopCard() {
+type Shop = Tables<'shops'>;
+
+interface ShopCardProps {
+  shop: Shop;
+}
+
+export default function ShopCard({ shop }: ShopCardProps) {
+  const handlePress = () => {
+    router.push({
+      pathname: "/(user)/ShopDetail",
+      params: { shopId: shop.id }
+    });
+  };
+
   return (
     <View style={styles.shopCard}>
       <Image
-        source={require("../../assets/images/shop.jpg")}
+        source={{
+          uri: shop.image || "https://via.placeholder.com/155x140?text=No+Image"
+        }}
         style={styles.shopImage}
       />
-      <Text style={styles.shopTitle}>Simba Supermarket</Text>
-      <TouchableOpacity style={styles.shopButton} onPress={() => router.push("/(user)/ShopDetail")}>
+      <Text style={styles.shopTitle}>{shop.title}</Text>
+      <TouchableOpacity style={styles.shopButton} onPress={handlePress}>
         <Text style={styles.shopButtonText}>View shop</Text>
       </TouchableOpacity>
     </View>

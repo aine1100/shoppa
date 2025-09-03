@@ -1,8 +1,10 @@
+// app/(user)/index.tsx
 import { Colors } from "@/constants/Colors";
 import { Entypo, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import {
+    ActivityIndicator,
     Image,
     ScrollView,
     StyleSheet,
@@ -12,8 +14,34 @@ import {
 } from "react-native";
 import ProductsList from "@/components/ui/ProductList";
 import CategoriesList from "@/components/ui/CategoriesList";
+import { useLatestShops } from "@/hooks/useShops";
+
+const ShopCardHome = ({ shop }: { shop: any }) => {
+  return (
+    <TouchableOpacity 
+      style={styles.shopCard}
+      onPress={() => router.push({
+        pathname: "/(user)/ShopDetail",
+        params: { shopId: shop.id }
+      })}
+    >
+      <Image
+        source={{
+          uri: shop.image || "https://via.placeholder.com/160x100?text=No+Image"
+        }}
+        style={styles.shopImage}
+      />
+      <Text style={styles.shopName}>{shop.title}</Text>
+      <TouchableOpacity style={styles.viewShopButton}>
+        <Text style={styles.viewShopButtonText}>View shop</Text>
+      </TouchableOpacity>
+    </TouchableOpacity>
+  );
+};
 
 export default function HomeScreen() {
+  const { data: latestShops, isLoading: shopsLoading } = useLatestShops(2);
+
   return (
     <View style={styles.container}>
       <View style={styles.topBar}>
@@ -75,39 +103,21 @@ export default function HomeScreen() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.shopsContainer}
-        >
-          <TouchableOpacity 
-            style={styles.shopCard}
-            onPress={() => router.push("/(user)/ShopDetail")}
+        {shopsLoading ? (
+          <View style={styles.shopsContainer}>
+            <ActivityIndicator color={Colors.tint} />
+          </View>
+        ) : latestShops && latestShops.length > 0 ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.shopsContainer}
           >
-            <Image
-              source={require("../../assets/images/image_5.png")}
-              style={styles.shopImage}
-            />
-            <Text style={styles.shopName}>Simba Supermarket</Text>
-            <TouchableOpacity style={styles.viewShopButton}>
-              <Text style={styles.viewShopButtonText}>View shop</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-          
-          <TouchableOpacity 
-            style={styles.shopCard}
-            onPress={() => router.push("/(user)/ShopDetail")}
-          >
-            <Image
-              source={require("../../assets/images/image_5.png")}
-              style={styles.shopImage}
-            />
-            <Text style={styles.shopName}>Simba Supermarket</Text>
-            <TouchableOpacity style={styles.viewShopButton}>
-              <Text style={styles.viewShopButtonText}>View shop</Text>
-            </TouchableOpacity>
-          </TouchableOpacity>
-        </ScrollView>
+            {latestShops.map((shop) => (
+              <ShopCardHome key={shop.id} shop={shop} />
+            ))}
+          </ScrollView>
+        ) : null}
       </ScrollView>
 
       {/* Bottom Navigation */}

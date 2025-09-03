@@ -31,7 +31,6 @@ export default function RootLayout() {
   }
 
   return (
-    // Wrap everything with QueryClientProvider first
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>

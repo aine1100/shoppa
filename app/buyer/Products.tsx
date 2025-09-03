@@ -34,7 +34,7 @@ const ProductsScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     backgroundColor: "#fff",
   },
   
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   },
 
   productsContainer: {
-    flex: 1,
+    // flex: 1,
   },
 });
 

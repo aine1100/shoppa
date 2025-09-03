@@ -31,7 +31,8 @@ const styles = StyleSheet.create({
   categoryButton: {
     paddingHorizontal: 16,
     paddingVertical: 10,
-    borderRadius: 20,
+    borderRadius: 12,
+    height: 40, 
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: Colors.tint,
