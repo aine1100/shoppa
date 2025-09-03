@@ -1,169 +1,93 @@
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
+import { useCurrentUser, useSignOut } from "@/hooks/useAuth";
+import { useProductsByShop } from "@/hooks/useProducts";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import React, { useState } from "react";
+import React from "react";
 import {
+  Alert,
   Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function ShopProfileScreen() {
-  const [isFollowing, setIsFollowing] = useState(false);
+  const { data: authData, isLoading } = useCurrentUser();
+  const signOutMutation = useSignOut();
+  
+  const shopId = authData?.shop?.id;
+  const { data: productsData, isLoading: productsLoading } = useProductsByShop(shopId || "");
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={[styles.container, styles.centered]}>
+        <LoadingSpinner />
+      </SafeAreaView>
+    );
+  }
+
+  if (!authData?.success || !authData.user) {
+    router.push("/shop/auth/login");
+    return null;
+  }
+
+  const { user, shop } = authData;
+  const products = productsData?.success ? productsData.products || [] : [];
 
   const shopInfo = {
-    name: "Shopa",
-    
-    product: "1.5K",
+    name: shop?.title || user.full_name || "My Shop",
+    product: products.length.toString(),
     rating: 4.8,
-    reviews: "12.5K",
-    description:
-      "Premium fashion & lifestyle store. Quality products at affordable prices. Fast shipping worldwide.",
+    reviews: "0",
+    description: shop?.description || "Welcome to my digital store!",
     verified: true,
-    location: "New York, USA",
-    website: "www.shopa.com",
+    location: "Location not set",
+    website: "www.myshop.com",
   };
 
-  const products = [
-    {
-      id: 1,
-      name: "Black Winter Jacket",
-      price: "$89.99",
-      originalPrice: "$129.99",
-      image: require("@/assets/images/product.png"),
-      discount: "30% OFF",
-      rating: 4.5,
-      reviews: 234,
-    },
-    {
-      id: 2,
-      name: "Mens Starry Night Shirt",
-      price: "$45.99",
-      originalPrice: "$65.99",
-      image: require("@/assets/images/product.png"),
-      discount: "30% OFF",
-      rating: 4.3,
-      reviews: 156,
-    },
-    {
-      id: 3,
-      name: "Black Dress",
-      price: "$79.99",
-      originalPrice: "$99.99",
-      image: require("@/assets/images/product.png"),
-      discount: "20% OFF",
-      rating: 4.7,
-      reviews: 89,
-    },
-    {
-      id: 4,
-      name: "Pink Envelope Bag",
-      price: "$35.99",
-      originalPrice: "$49.99",
-      image: require("@/assets/images/product.png"),
-      discount: "28% OFF",
-      rating: 4.2,
-      reviews: 67,
-    },
-    {
-      id: 5,
-      name: "Blue Dress",
-      price: "$69.99",
-      originalPrice: "$89.99",
-      image: require("@/assets/images/product.png"),
-      discount: "22% OFF",
-      rating: 4.6,
-      reviews: 123,
-    },
-    {
-      id: 6,
-      name: "Denim Dress",
-      price: "$55.99",
-      originalPrice: "$75.99",
-      image: require("@/assets/images/product.png"),
-      discount: "26% OFF",
-      rating: 4.4,
-      reviews: 98,
-    },
-    {
-      id: 7,
-      name: "Ocean Surf Tee",
-      price: "$29.99",
-      originalPrice: "$39.99",
-      image: require("@/assets/images/product.png"),
-      discount: "25% OFF",
-      rating: 4.1,
-      reviews: 45,
-    },
-    {
-      id: 8,
-      name: "Red Hoodie",
-      price: "$59.99",
-      originalPrice: "$79.99",
-      image: require("@/assets/images/product.png"),
-      discount: "25% OFF",
-      rating: 4.5,
-      reviews: 178,
-    },
-    {
-      id: 9,
-      name: "Sony Shoes",
-      price: "$119.99",
-      originalPrice: "$149.99",
-      image: require("@/assets/images/product.png"),
-      discount: "20% OFF",
-      rating: 4.8,
-      reviews: 267,
-    },
-    {
-      id: 10,
-      name: "Black Hoodie",
-      price: "$65.99",
-      originalPrice: "$85.99",
-      image: require("@/assets/images/product.png"),
-      discount: "23% OFF",
-      rating: 4.3,
-      reviews: 134,
-    },
-    {
-      id: 11,
-      name: "DTOM Dri-Fit Tee",
-      price: "$39.99",
-      originalPrice: "$54.99",
-      image: require("@/assets/images/product.png"),
-      discount: "27% OFF",
-      rating: 4.2,
-      reviews: 89,
-    },
-    {
-      id: 12,
-      name: "Men Running Shoes",
-      price: "$99.99",
-      originalPrice: "$129.99",
-      image: require("@/assets/images/product.png"),
-      discount: "23% OFF",
-      rating: 4.6,
-      reviews: 203,
-    },
-  ];
+  // Real products data is now loaded from useProductsByShop hook above
 
-  const handleFollow = () => {
-    setIsFollowing(!isFollowing);
+  const handleProductPress = (productId: string) => {
+    router.push(`/shop/product/product-detail?id=${productId}`);
   };
 
-  const handleProductPress = (productId: number) => {
-    router.push("/shop/product/product-detail");
+  const handleAddProduct = () => {
+    router.push("/shop/product/add-product");
   };
 
-  const handleMessage = () => {
-    // Handle message functionality
+  const handleEditProfile = () => {
+    // Navigate to edit profile screen
+    router.push("/shop/profile/store");
+  };
+
+  const handleSignOut = async () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Sign Out",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOutMutation.mutateAsync();
+            } catch (error) {
+              Alert.alert("Error", "Failed to sign out. Please try again.");
+            }
+          },
+        },
+      ]
+    );
   };
 
   const handleShare = () => {
     // Handle share functionality
+    Alert.alert("Share", "Share functionality coming soon!");
   };
 
   return (
@@ -181,8 +105,8 @@ export default function ShopProfileScreen() {
             <Text style={styles.logoText}>Shopa</Text>
           </View>
         </View>
-        <TouchableOpacity>
-          <Ionicons name="ellipsis-horizontal" size={24} color="white" />
+        <TouchableOpacity onPress={handleSignOut}>
+          <Ionicons name="log-out" size={24} color="white" />
         </TouchableOpacity>
       </View>
 
@@ -229,7 +153,7 @@ export default function ShopProfileScreen() {
           <View style={styles.actionButtons}>
             <TouchableOpacity
               style={styles.messageButton}
-              onPress={handleMessage}
+              onPress={handleEditProfile}
             >
               <Text style={styles.messageButtonText}>Edit Profile</Text>
             </TouchableOpacity>
@@ -243,56 +167,70 @@ export default function ShopProfileScreen() {
         <View style={styles.productsSection}>
           <View style={styles.sectionHeader}>
             <Text style={styles.sectionTitle}>Products</Text>
-            <Text style={styles.productCount}>{products.length} items</Text>
-          </View>
-
-          <View style={styles.productsGrid}>
-            {products.map((product) => (
-              <TouchableOpacity
-                key={product.id}
-                style={styles.productCard}
-                onPress={() => handleProductPress(product.id)}
-              >
-                <View style={styles.productImageContainer}>
-                  <Image source={product.image} style={styles.productImage} />
-                  <View style={styles.discountBadge}>
-                    <Text style={styles.discountText}>{product.discount}</Text>
-                  </View>
-                </View>
-
-                <View style={styles.productInfo}>
-                  <Text style={styles.productName} numberOfLines={2}>
-                    {product.name}
-                  </Text>
-
-                  <View style={styles.ratingRow}>
-                    <View style={styles.stars}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <Ionicons
-                          key={star}
-                          name={
-                            star <= Math.floor(product.rating)
-                              ? "star"
-                              : "star-outline"
-                          }
-                          size={12}
-                          color="#FFD700"
-                        />
-                      ))}
-                    </View>
-                    <Text style={styles.reviewCount}>({product.reviews})</Text>
-                  </View>
-
-                  <View style={styles.priceContainer}>
-                    <Text style={styles.price}>{product.price}</Text>
-                    <Text style={styles.originalPrice}>
-                      {product.originalPrice}
-                    </Text>
-                  </View>
-                </View>
+            <View style={styles.headerRight}>
+              <Text style={styles.productCount}>{products.length} items</Text>
+              <TouchableOpacity onPress={handleAddProduct} style={styles.addButton}>
+                <Ionicons name="add" size={20} color="#4CAF50" />
               </TouchableOpacity>
-            ))}
+            </View>
           </View>
+
+          {productsLoading ? (
+            <View style={styles.loadingContainer}>
+              <LoadingSpinner />
+              <Text style={styles.loadingText}>Loading products...</Text>
+            </View>
+          ) : products.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Ionicons name="storefront-outline" size={64} color="#ccc" />
+              <Text style={styles.emptyTitle}>No Products Yet</Text>
+              <Text style={styles.emptyText}>Start building your inventory by adding your first product</Text>
+              <TouchableOpacity onPress={handleAddProduct} style={styles.addFirstProductButton}>
+                <Text style={styles.addFirstProductText}>Add Your First Product</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View style={styles.productsGrid}>
+              {products.map((product) => (
+                <TouchableOpacity
+                  key={product.id}
+                  style={styles.productCard}
+                  onPress={() => handleProductPress(product.id)}
+                >
+                  <View style={styles.productImageContainer}>
+                    <Image 
+                      source={product.image ? { uri: product.image } : require("@/assets/images/product.png")} 
+                      style={styles.productImage} 
+                    />
+                  </View>
+
+                  <View style={styles.productInfo}>
+                    <Text style={styles.productName} numberOfLines={2}>
+                      {product.name}
+                    </Text>
+
+                    <View style={styles.ratingRow}>
+                      <View style={styles.stars}>
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Ionicons
+                            key={star}
+                            name="star-outline"
+                            size={12}
+                            color="#FFD700"
+                          />
+                        ))}
+                      </View>
+                      <Text style={styles.reviewCount}>(0)</Text>
+                    </View>
+
+                    <View style={styles.priceContainer}>
+                      <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+                    </View>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -303,6 +241,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#000",
+  },
+  centered: {
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   header: {
     flexDirection: "row",
@@ -477,6 +419,52 @@ const styles = StyleSheet.create({
   productCount: {
     fontSize: 14,
     color: "#666",
+  },
+  headerRight: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+  },
+  addButton: {
+    padding: 4,
+  },
+  loadingContainer: {
+    alignItems: "center",
+    paddingVertical: 40,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 14,
+    color: "#666",
+  },
+  emptyContainer: {
+    alignItems: "center",
+    paddingVertical: 60,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyText: {
+    fontSize: 14,
+    color: "#666",
+    textAlign: "center",
+    marginBottom: 24,
+    paddingHorizontal: 20,
+  },
+  addFirstProductButton: {
+    backgroundColor: "#4CAF50",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  addFirstProductText: {
+    color: "white",
+    fontSize: 16,
+    fontWeight: "600",
   },
   productsGrid: {
     flexDirection: "row",

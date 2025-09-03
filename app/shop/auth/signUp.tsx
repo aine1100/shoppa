@@ -2,9 +2,10 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { useGoogleSignIn, useSignUp } from "@/hooks/useAuth";
 import { router } from "expo-router";
 import React, { useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, View } from "react-native";
 
 export default function SignUpScreen() {
   const [firstName, setFirstName] = useState("");
@@ -13,18 +14,56 @@ export default function SignUpScreen() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const handleContinue = () => {
-    // Navigate to verification screen
-    router.push("/shop/auth/verify");
+  const signUpMutation = useSignUp();
+  const googleSignInMutation = useGoogleSignIn();
+
+  const handleContinue = async () => {
+    // Validation
+    if (!firstName.trim() || !lastName.trim() || !email.trim() || !password.trim()) {
+      Alert.alert("Error", "Please fill in all required fields");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      Alert.alert("Error", "Password must be at least 6 characters long");
+      return;
+    }
+
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+    
+    try {
+      const result = await signUpMutation.mutateAsync({
+        email: email.trim(),
+        password,
+        fullName,
+      });
+
+      if (!result.success) {
+        Alert.alert("Sign Up Failed", result.error || "An error occurred");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to create account. Please try again.");
+    }
   };
 
   const handleLogin = () => {
-    // Navigate to login screen
     router.push("/shop/auth/login");
   };
 
-  const handleGoogleSignUp = () => {
-    console.log("Google sign up pressed");
+  const handleGoogleSignUp = async () => {
+    try {
+      const result = await googleSignInMutation.mutateAsync();
+      if (!result.success) {
+        Alert.alert("Google Sign In Failed", result.error || "An error occurred");
+      }
+    } catch (err) {
+      Alert.alert("Error", "Failed to sign in with Google. Please try again.");
+    }
   };
 
   return (
@@ -97,10 +136,11 @@ export default function SignUpScreen() {
           />
 
           <Button
-            title="Continue →"
+            title={signUpMutation.isPending ? "Creating Account..." : "Continue →"}
             onPress={handleContinue}
             variant="primary"
             style={styles.continueButton}
+            disabled={signUpMutation.isPending}
           />
 
           {/* Login Link */}
@@ -126,11 +166,12 @@ export default function SignUpScreen() {
 
           {/* Google Sign Up */}
           <Button
-            title="Continue with Google"
+            title={googleSignInMutation.isPending ? "Signing in..." : "Continue with Google"}
             onPress={handleGoogleSignUp}
             variant="secondary"
             style={styles.googleButton}
             textStyle={styles.googleButtonText}
+            disabled={googleSignInMutation.isPending}
           />
         </View>
 
