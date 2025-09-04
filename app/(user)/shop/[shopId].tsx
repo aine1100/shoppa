@@ -1,8 +1,20 @@
+// (user)/ShopDetail.tsx
 import { Colors } from "@/constants/Colors";
 import { Ionicons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import React, { useState } from "react";
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { 
+  ActivityIndicator, 
+  Image, 
+  ScrollView, 
+  StyleSheet, 
+  Text, 
+  TouchableOpacity, 
+  View 
+} from "react-native";
+import { useShopDetails } from "@/hooks/useShopDetails";
+import { useShopProducts, useLatestShopProduct } from "@/hooks/useShopProducts";
+import CategoriesList from "@/components/ui/CategoriesList";
 
 // Dynamic import for Lucide
 let Lucide: any = null;
@@ -10,9 +22,54 @@ try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
 const { MessageCircle, Phone, Mail, MapPin } = Lucide || {};
 
 const ShopDetailScreen = () => {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const { id: shopId } = useLocalSearchParams<{ id: string }>();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null);
+  
+  // Fetch shop details
+  const { data: shop, isLoading: shopLoading, error: shopError } = useShopDetails(shopId);
+  
+  // Fetch products based on selected category
+  const { data: products, isLoading: productsLoading } = useShopProducts({
+    shopId,
+    categoryId: selectedCategoryId
+  });
+  
+  // Fetch latest product
+  const { data: latestProduct } = useLatestShopProduct(shopId, selectedCategoryId);
 
-  const categories = ["All", "Clothes", "Food", "Furniture", "Fruits"];
+  const handleCategorySelect = (categoryId: string | null) => {
+    setSelectedCategoryId(categoryId);
+  };
+
+  const formatLocation = () => {
+    if (!shop) return 'Location not available';
+    if (shop.latitude && shop.longitude) {
+      return `Lat: ${shop.latitude.toFixed(4)}, Long: ${shop.longitude.toFixed(4)}`;
+    }
+    return 'Kigali, Rwanda'; // Default location
+  };
+
+  if (shopLoading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color={Colors.tint} />
+      </View>
+    );
+  }
+
+  if (shopError || !shop) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text style={styles.errorText}>Failed to load shop details</Text>
+        <TouchableOpacity 
+          style={styles.retryButton} 
+          onPress={() => router.back()}
+        >
+          <Text style={styles.retryButtonText}>Go Back</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -24,7 +81,7 @@ const ShopDetailScreen = () => {
         >
           <Ionicons name="arrow-back" size={24} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Simba Supermarket</Text>
+        <Text style={styles.headerTitle} numberOfLines={1}>{shop.title}</Text>
         <Text style={styles.brandName}>Shopa</Text>
       </View>
 
@@ -34,10 +91,16 @@ const ShopDetailScreen = () => {
         contentContainerStyle={styles.scrollContent}
       >
         {/* Shop Banner */}
-        <Image
-          source={require("../../assets/images/image_5.png")}
-          style={styles.shopBanner}
-        />
+        {shop.image ? (
+          <Image
+            source={{ uri: shop.image }}
+            style={styles.shopBanner}
+          />
+        ) : (
+          <View style={[styles.shopBanner, styles.placeholderBanner]}>
+            <Ionicons name="storefront-outline" size={50} color="#ccc" />
+          </View>
+        )}
 
         {/* Contact Information */}
         <View style={styles.contactSection}>
@@ -53,7 +116,9 @@ const ShopDetailScreen = () => {
                 <Ionicons name="call-outline" size={20} color={Colors.tint} />
               )}
             </View>
-            <Text style={styles.contactText}>Phone Number: 0788888889</Text>
+            <Text style={styles.contactText}>
+              Phone: {shop.owner[0]?.phone_number || 'Not available'}
+            </Text>
           </View>
 
           <View style={styles.contactItem}>
@@ -66,7 +131,9 @@ const ShopDetailScreen = () => {
                 <Ionicons name="mail-outline" size={20} color={Colors.tint} />
               )}
             </View>
-            <Text style={styles.contactText}>Email: simba@gmail.com</Text>
+            <Text style={styles.contactText}>
+              Email: {shop.owner[0]?.email || 'Not available'}
+            </Text>
           </View>
 
           <View style={styles.contactItem}>
@@ -79,71 +146,73 @@ const ShopDetailScreen = () => {
                 <Ionicons name="location-outline" size={20} color={Colors.tint} />
               )}
             </View>
-            <Text style={styles.contactText}>Location: Kimironko Kigali</Text>
+            <Text style={styles.contactText}>
+              Location: {formatLocation()}
+            </Text>
           </View>
         </View>
 
         {/* Products Section */}
         <View style={styles.productsSection}>
           <View style={styles.productHeader}>
-            <Text style={styles.sectionTitle}>Products (10)</Text>
-            <TouchableOpacity>
+            <Text style={styles.sectionTitle}>
+              Products {products ? `(${products.length})` : ''}
+            </Text>
+            {/* <TouchableOpacity onPress={() => router.push({
+              pathname: "/(user)/ShopProducts",
+              params: { shopId },
+            })}>
               <Text style={styles.seeAllText}>See all</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </View>
 
-          {/* Category Tabs */}
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.categoryContainer}
-          >
-            {categories.map((category) => (
-              <TouchableOpacity
-                key={category}
-                style={[
-                  styles.categoryButton,
-                  activeCategory === category && styles.activeCategoryButton
-                ]}
-                onPress={() => setActiveCategory(category)}
-              >
-                <Text
-                  style={[
-                    styles.categoryText,
-                    activeCategory === category && styles.activeCategoryText
-                  ]}
-                >
-                  {category}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
+          {/* Category Tabs - Replaced with CategoriesList */}
+          <CategoriesList onCategorySelect={handleCategorySelect} />
 
           {/* Latest Product */}
-          <Text style={styles.subsectionTitle}>Latest</Text>
-          <View style={styles.productCard}>
-            <Image
-              source={require("../../assets/images/shoe.png")}
-              style={styles.productImage}
-            />
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>Nike Air Force Shoe</Text>
-              <Text style={styles.productPrice}>20000 Frw</Text>
-              <TouchableOpacity 
-                style={styles.viewButton}
-                onPress={() => router.push("/(user)/ProductDetail")}
-              >
-                <Text style={styles.viewButtonText}>View</Text>
-              </TouchableOpacity>
+          {productsLoading ? (
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="small" color={Colors.tint} />
             </View>
-          </View>
+          ) : latestProduct ? (
+            <>
+              <Text style={styles.subsectionTitle}>Latest</Text>
+              <View style={styles.productCard}>
+                {latestProduct.image ? (
+                  <Image
+                    source={{ uri: latestProduct.image }}
+                    style={styles.productImage}
+                  />
+                ) : (
+                  <View style={[styles.productImage, styles.placeholderImage]}>
+                    <Ionicons name="image-outline" size={30} color="#ccc" />
+                  </View>
+                )}
+                <View style={styles.productInfo}>
+                  <Text style={styles.productName} numberOfLines={2}>
+                    {latestProduct.name}
+                  </Text>
+                  <Text style={styles.productPrice}>
+                    {latestProduct.price.toLocaleString()} Frw
+                  </Text>
+                  <TouchableOpacity 
+                    style={styles.viewButton}
+                    onPress={() => router.push(`/(user)/ProductDetail?id=${latestProduct.id}`)}
+                  >
+                    <Text style={styles.viewButtonText}>View</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </>
+          ) : (
+            <Text style={styles.noProductsText}>No products available</Text>
+          )}
         </View>
       </ScrollView>
 
-      {/* Chat Button */}
-      <TouchableOpacity 
+          {/* <TouchableOpacity 
         style={styles.chatButton}
-        onPress={() => router.push("/(user)/Chat")}
+        onPress={() => router.push(`/(user)/Chat?shopId=${shopId}`)}
       >
         {Ionicons.glyphMap['chatbubble'] ? (
           <Ionicons name="chatbubble" size={20} color="#fff" />
@@ -153,7 +222,7 @@ const ShopDetailScreen = () => {
           <Ionicons name="chatbubble-outline" size={20} color="#fff" />
         )}
         <Text style={styles.chatButtonText}>Chat with Shop</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
@@ -162,6 +231,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#fff",
+  },
+  centerContent: {
+    justifyContent: "center",
+    alignItems: "center",
   },
 
   // Header styles
@@ -186,6 +259,7 @@ const styles = StyleSheet.create({
     color: "#2c2c2c",
     flex: 1,
     textAlign: "center",
+    marginHorizontal: 8,
   },
   brandName: {
     fontSize: 16,
@@ -206,6 +280,11 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 200,
     resizeMode: "cover",
+  },
+  placeholderBanner: {
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
   },
 
   // Contact section styles
@@ -263,29 +342,6 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
 
-  // Category styles
-  categoryContainer: {
-    paddingRight: 16,
-  },
-  categoryButton: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    marginRight: 12,
-    borderRadius: 20,
-    backgroundColor: "#f5f5f5",
-  },
-  activeCategoryButton: {
-    backgroundColor: Colors.tint,
-  },
-  categoryText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#666",
-  },
-  activeCategoryText: {
-    color: "#fff",
-  },
-
   // Product card styles
   productCard: {
     flexDirection: "row",
@@ -302,6 +358,11 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 8,
+  },
+  placeholderImage: {
+    backgroundColor: "#f5f5f5",
+    alignItems: "center",
+    justifyContent: "center",
   },
   productInfo: {
     flex: 1,
@@ -355,6 +416,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginLeft: 8,
+  },
+
+  // Loading and error styles
+  loadingContainer: {
+    paddingVertical: 40,
+    alignItems: "center",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 20,
+  },
+  retryButton: {
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    backgroundColor: Colors.tint,
+    borderRadius: 8,
+  },
+  retryButtonText: {
+    color: "#fff",
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  noProductsText: {
+    fontSize: 14,
+    color: "#999",
+    textAlign: "center",
+    paddingVertical: 20,
   },
 });
 
