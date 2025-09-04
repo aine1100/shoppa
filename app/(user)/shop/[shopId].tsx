@@ -197,7 +197,10 @@ const ShopDetailScreen = () => {
                   </Text>
                   <TouchableOpacity 
                     style={styles.viewButton}
-                    onPress={() => router.push(`/(user)/ProductDetail?id=${latestProduct.id}`)}
+                    onPress={() => router.push({
+                      pathname: '/(user)/products/[productId]',
+                      params: { productId: latestProduct.id }
+                    })}
                   >
                     <Text style={styles.viewButtonText}>View</Text>
                   </TouchableOpacity>

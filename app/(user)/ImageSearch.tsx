@@ -11,7 +11,7 @@ import {
     View,
 } from "react-native";
 
-// Dynamic import for Lucide
+
 let Lucide: any = null;
 try { Lucide = require('lucide-react-native'); } catch (e) { Lucide = null; }
 const { Camera, Upload, ArrowLeft } = Lucide || {};

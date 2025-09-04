@@ -99,7 +99,7 @@ export default function RecentlyViewedScreen() {
     const renderProduct = ({ item }: { item: Product }) => (
         <TouchableOpacity 
             style={styles.productCard}
-            onPress={() => router.push("/(user)/ProductDetail")}
+            onPress={() => router.push("/(user)/products/[productId]")}
         >
             <Image source={item.image} style={styles.productImage} />
             <Text style={styles.productName}>{item.name}</Text>

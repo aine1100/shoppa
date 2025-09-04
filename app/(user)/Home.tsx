@@ -21,7 +21,7 @@ const ShopCardHome = ({ shop }: { shop: any }) => {
     <TouchableOpacity 
       style={styles.shopCard}
       onPress={() => router.push({
-        pathname: "/(user)/ShopDetail",
+        pathname: "/(user)/shop/[shopId]",
         params: { shopId: shop.id }
       })}
     >
